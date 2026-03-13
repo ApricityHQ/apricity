@@ -9,6 +9,8 @@ Thumbs.db
 *.swo
 .cursor/
 
+.agents/
+
 # === Node.js / Frontend ===
 node_modules/
 .pnp

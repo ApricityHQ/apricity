@@ -6,6 +6,7 @@ import Link from 'next/link'
 import * as Icons from 'lucide-react'
 import { useDocument } from '@/context/DocumentContext'
 import ExportPDFButton from '@/components/ExportPDFButton'
+import CompetitorGrid from '@/components/CompetitorGrid'
 
 /**
  * View Processing Page
@@ -260,7 +261,7 @@ export default function ViewPage() {
         )}
 
         {view.status === 'completed' && (
-          <div className="max-w-4xl w-full">
+          <div className="max-w-6xl w-full">
             <div className="bg-main rounded-xl border border-border-subtle p-8 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-medium text-primary flex items-center gap-2">
@@ -274,16 +275,29 @@ export default function ViewPage() {
               
               <div className="prose prose-sm max-w-none text-secondary">
                 {view.data && typeof view.data === 'object' &&
-                  Object.entries(view.data).map(([key, value]) => (
-                    <div key={key} className="mb-6">
-                      <h3 className="text-sm font-semibold uppercase text-primary mb-2">
-                        {key.replace(/_/g, ' ')}
-                      </h3>
-                      {renderResultValue(value)}
-                    </div>
-                  ))
+                  Object.entries(view.data)
+                    .filter(([key]) => !['competitors', 'competitor_search_status', 'idea_search_sentence', 'competitor_search_error'].includes(key))
+                    .map(([key, value]) => (
+                      <div key={key} className="mb-6">
+                        <h3 className="text-sm font-semibold uppercase text-primary mb-2">
+                          {key.replace(/_/g, ' ')}
+                        </h3>
+                        {renderResultValue(value)}
+                      </div>
+                    ))
                 }
               </div>
+
+              {/* Competitor Landscape */}
+              {view.data?.competitors && (
+                <div className="mt-8 pt-6 border-t border-border-subtle">
+                  <CompetitorGrid
+                    competitors={view.data.competitors}
+                    searchSentence={view.data.idea_search_sentence}
+                    status={view.data.competitor_search_status}
+                  />
+                </div>
+              )}
 
             </div>
           </div>

@@ -133,7 +133,9 @@ export default function ExportPDFButton({ data, viewId, startupName = 'Startup A
 
           {/* Content Sections */}
           <div className="space-y-12">
-            {data && Object.entries(data).map(([key, value]) => (
+            {data && Object.entries(data)
+              .filter(([key]) => !['competitors', 'competitor_search_status', 'idea_search_sentence', 'competitor_search_error'].includes(key))
+              .map(([key, value]) => (
               <div 
                 key={key} 
                 style={{ 
@@ -146,8 +148,8 @@ export default function ExportPDFButton({ data, viewId, startupName = 'Startup A
                   <h2 
                     style={{ 
                       fontFamily: styles.fontSerif,
-                      fontWeight: 500, // Medium
-                      fontSize: '18pt', // Medium-large ~22-24pt
+                      fontWeight: 500,
+                      fontSize: '18pt',
                       color: styles.colorTextPrimary,
                       textTransform: 'uppercase',
                       letterSpacing: '0.02em',
@@ -170,25 +172,16 @@ export default function ExportPDFButton({ data, viewId, startupName = 'Startup A
                   {typeof value === 'string' ? (
                     <ReactMarkdown
                       components={{
-                        // Subsection Titles
                         h1: ({node, ...props}) => <h3 style={{ fontFamily: styles.fontSans, fontWeight: 500, fontSize: '12pt', marginTop: '4mm', marginBottom: '2mm', breakAfter: 'avoid' }} {...props} />,
                         h2: ({node, ...props}) => <h3 style={{ fontFamily: styles.fontSans, fontWeight: 500, fontSize: '12pt', marginTop: '4mm', marginBottom: '2mm', breakAfter: 'avoid' }} {...props} />,
                         h3: ({node, ...props}) => <h3 style={{ fontFamily: styles.fontSans, fontWeight: 500, fontSize: '12pt', marginTop: '4mm', marginBottom: '2mm', breakAfter: 'avoid' }} {...props} />,
-                        
-                        // Body Paragraphs
                         p: ({node, ...props}) => <p style={{ marginBottom: '3mm', color: styles.colorTextPrimary }} {...props} />,
-                        
-                        // Lists
                         ul: ({node, ...props}) => <ul style={{ listStyleType: 'disc', paddingLeft: '5mm', marginBottom: '3mm' }} {...props} />,
                         ol: ({node, ...props}) => <ol style={{ listStyleType: 'decimal', paddingLeft: '5mm', marginBottom: '3mm' }} {...props} />,
                         li: ({node, ...props}) => <li style={{ marginBottom: '1.5mm', paddingLeft: '1mm' }} {...props} />,
-                        
-                        // Inline elements
                         strong: ({node, ...props}) => <strong style={{ fontWeight: 600, color: styles.colorTextPrimary }} {...props} />,
                         a: ({node, ...props}) => <a style={{ color: styles.colorTextPrimary, textDecoration: 'underline', textDecorationColor: styles.colorBrandPeach }} {...props} />,
                         blockquote: ({node, ...props}) => <blockquote style={{ borderLeft: `2px solid ${styles.colorBrandPeach}`, paddingLeft: '4mm', marginLeft: 0, color: styles.colorTextSecondary, fontStyle: 'italic' }} {...props} />,
-                        
-                        // Code blocks (simple representation)
                         code: ({node, inline, ...props}) => inline 
                           ? <code style={{ fontFamily: 'monospace', fontSize: '0.9em', backgroundColor: '#F5F5F5', padding: '1px 3px', borderRadius: '2px' }} {...props} />
                           : <pre style={{ fontFamily: 'monospace', fontSize: '0.85em', backgroundColor: '#F5FAFA', padding: '4mm', borderRadius: '4px', overflowX: 'auto', marginBottom: '3mm', color: styles.colorTextSecondary }}><code {...props} /></pre>
@@ -197,7 +190,6 @@ export default function ExportPDFButton({ data, viewId, startupName = 'Startup A
                       {value}
                     </ReactMarkdown>
                   ) : (
-                    // Fallback for non-string data (Error states/Objects)
                     <div style={{ color: styles.colorTextSecondary, fontStyle: 'italic', borderLeft: '2px solid #EEE', paddingLeft: '4mm' }}>
                       {JSON.stringify(value, null, 2)}
                     </div>
@@ -205,6 +197,52 @@ export default function ExportPDFButton({ data, viewId, startupName = 'Startup A
                 </div>
               </div>
             ))}
+
+            {/* Competitor Landscape for PDF */}
+            {data?.competitors?.length > 0 && (
+              <div style={{ pageBreakInside: 'avoid', marginBottom: '10mm' }}>
+                <div style={{ marginBottom: '6mm' }}>
+                  <h2 style={{ fontFamily: styles.fontSerif, fontWeight: 500, fontSize: '18pt', color: styles.colorTextPrimary, textTransform: 'uppercase', letterSpacing: '0.02em', margin: 0, marginBottom: '2mm' }}>
+                    Competitor Landscape
+                  </h2>
+                  <div style={{ height: '1px', backgroundColor: styles.colorBorder, width: '100%' }} />
+                  {data.idea_search_sentence && (
+                    <p style={{ fontFamily: styles.fontSans, fontSize: '9pt', color: styles.colorTextFaint, marginTop: '2mm' }}>
+                      Search: &ldquo;{data.idea_search_sentence}&rdquo;
+                    </p>
+                  )}
+                </div>
+                <table style={{ width: '100%', fontFamily: styles.fontSans, fontSize: '9pt', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ borderBottom: `2px solid ${styles.colorBorder}` }}>
+                      <th style={{ textAlign: 'left', padding: '2mm 1mm', fontWeight: 600, color: styles.colorTextPrimary }}>#</th>
+                      <th style={{ textAlign: 'left', padding: '2mm 1mm', fontWeight: 600, color: styles.colorTextPrimary }}>Company</th>
+                      <th style={{ textAlign: 'left', padding: '2mm 1mm', fontWeight: 600, color: styles.colorTextPrimary }}>Funding</th>
+                      <th style={{ textAlign: 'left', padding: '2mm 1mm', fontWeight: 600, color: styles.colorTextPrimary }}>Employees</th>
+                      <th style={{ textAlign: 'left', padding: '2mm 1mm', fontWeight: 600, color: styles.colorTextPrimary }}>HQ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.competitors.map((c, i) => (
+                      <tr key={i} style={{ borderBottom: `1px solid ${styles.colorBorder}` }}>
+                        <td style={{ padding: '2mm 1mm', color: styles.colorTextSecondary }}>{c.rank || i + 1}</td>
+                        <td style={{ padding: '2mm 1mm' }}>
+                          <strong style={{ color: styles.colorTextPrimary }}>{c.company_name}</strong>
+                          {c.description && c.description !== 'Unknown' && (
+                            <div style={{ fontSize: '8pt', color: styles.colorTextSecondary, marginTop: '0.5mm', maxWidth: '50mm', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {c.description}
+                            </div>
+                          )}
+                        </td>
+                        <td style={{ padding: '2mm 1mm', color: styles.colorTextSecondary }}>{c.funding || '—'}</td>
+                        <td style={{ padding: '2mm 1mm', color: styles.colorTextSecondary }}>{c.employees || '—'}</td>
+                        <td style={{ padding: '2mm 1mm', color: styles.colorTextSecondary }}>{c.headquarters || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           {/* Footer */}
