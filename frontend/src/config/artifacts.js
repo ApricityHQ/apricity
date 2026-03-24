@@ -34,17 +34,7 @@ export const ARTIFACT_TEMPLATES = [
         "What macro trends are in your favor?"
       ]
     },
-    defaultContent: `
-<h2>Problem Statement</h2>
-<h3>The Problem</h3>
-<p></p>
-<h3>Who Experiences This?</h3>
-<p></p>
-<h3>Current Alternatives</h3>
-<p></p>
-<h3>Why Now?</h3>
-<p></p>
-`
+    defaultContent: null
   },
   {
     id: 'founder-profile',
@@ -63,24 +53,7 @@ export const ARTIFACT_TEMPLATES = [
         "What is your unfair advantage?"
       ]
     },
-    defaultContent: `
-<h2>Founder Profile</h2>
-<h3>Background</h3>
-<p></p>
-<h3>Key Strengths</h3>
-<ul>
-  <li></li>
-  <li></li>
-  <li></li>
-</ul>
-<h3>Relevant Experience</h3>
-<ul>
-  <li></li>
-  <li></li>
-</ul>
-<h3>Why This Problem?</h3>
-<p></p>
-`
+    defaultContent: null
   },
   {
     id: 'solution-hypothesis',
@@ -99,24 +72,7 @@ export const ARTIFACT_TEMPLATES = [
         "What is your moat?"
       ]
     },
-    defaultContent: `
-<h2>Solution Hypothesis</h2>
-<h3>Core Solution</h3>
-<p></p>
-<h3>Key Features</h3>
-<ul>
-  <li></li>
-  <li></li>
-  <li></li>
-</ul>
-<h3>Unique Value Proposition</h3>
-<p></p>
-<h3>Assumptions to Validate</h3>
-<ul>
-  <li></li>
-  <li></li>
-</ul>
-`
+    defaultContent: null
   },
   {
     id: 'market-notes',
@@ -130,22 +86,7 @@ export const ARTIFACT_TEMPLATES = [
         "Who are the new entrants?"
       ]
     },
-    defaultContent: `
-<h2>Market Notes</h2>
-<h3>Market Size</h3>
-<ul>
-  <li>TAM (Total Addressable Market): </li>
-  <li>SAM (Serviceable Addressable Market): </li>
-  <li>SOM (Serviceable Obtainable Market): </li>
-</ul>
-<h3>Market Trends</h3>
-<ul>
-  <li></li>
-  <li></li>
-</ul>
-<h3>Competitive Landscape</h3>
-<p></p>
-`
+    defaultContent: null
   },
   {
     id: 'team',
@@ -153,34 +94,7 @@ export const ARTIFACT_TEMPLATES = [
     icon: 'Users',
     description: 'Core team, advisors, and key hires',
     prompts: {},
-    defaultContent: `
-<h2>Team</h2>
-<h3>Core Team</h3>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Role</th>
-      <th>Background</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-  </tbody>
-</table>
-<h3>Advisory Board</h3>
-<ul>
-  <li></li>
-</ul>
-<h3>Key Hires Needed</h3>
-<ul>
-  <li></li>
-</ul>
-`
+    defaultContent: null
   },
   {
     id: 'funding-runway',
@@ -199,19 +113,7 @@ export const ARTIFACT_TEMPLATES = [
         "What is the timeline?"
       ]
     },
-    defaultContent: `
-<h2>Funding & Runway</h2>
-<h3>Current Status</h3>
-<ul>
-  <li>Stage: </li>
-  <li>Raised to date: </li>
-  <li>Current runway: </li>
-</ul>
-<h3>Use of Funds</h3>
-<p></p>
-<h3>Milestones</h3>
-<p></p>
-`
+    defaultContent: null
   },
   {
     id: 'risks-unknowns',
@@ -230,39 +132,7 @@ export const ARTIFACT_TEMPLATES = [
         "What are you taking for granted?"
       ]
     },
-    defaultContent: `
-<h2>Risks & Unknowns</h2>
-<h3>Key Risks</h3>
-<table>
-  <thead>
-    <tr>
-      <th>Risk</th>
-      <th>Likelihood</th>
-      <th>Impact</th>
-      <th>Mitigation</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-  </tbody>
-</table>
-<h3>Open Questions</h3>
-<p></p>
-<ul>
-  <li></li>
-  <li></li>
-</ul>
-<h3>Assumptions</h3>
-<p></p>
-<ul>
-  <li></li>
-</ul>
-`
+    defaultContent: null
   },
   {
     id: 'external-references',
@@ -270,21 +140,7 @@ export const ARTIFACT_TEMPLATES = [
     icon: 'Link',
     description: 'Documents, links, and research sources',
     prompts: {},
-    defaultContent: `
-<h2>External References</h2>
-<h3>Documents & Links</h3>
-<ul>
-  <li></li>
-</ul>
-<h3>Research & Data Sources</h3>
-<ul>
-  <li></li>
-</ul>
-<h3>Inspiration & Comparables</h3>
-<ul>
-  <li></li>
-</ul>
-`
+    defaultContent: null
   },
   {
     id: 'custom',

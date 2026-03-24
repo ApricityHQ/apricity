@@ -2,8 +2,7 @@
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import Placeholder from '@tiptap/extension-placeholder'
-import { DynamicPlaceholder } from '../extensions/DynamicPlaceholderPlugin'
+import EditorGuide from './EditorGuide'
 import * as Icons from 'lucide-react'
 import { ARTIFACT_TEMPLATES } from '@/config/artifacts'
 import { useMemo } from 'react'
@@ -66,21 +65,6 @@ export default function Editor() {
       setIsEditingTitle(false)
     }
   }
-
-  const promptConfig = useMemo(() => {
-    // Merge all prompts from all templates into a single map: Heading -> Prompts[]
-    // This allows the extension to find prompts for any known heading
-    const allPrompts = {}
-    ARTIFACT_TEMPLATES.forEach(template => {
-      if (template.prompts) {
-        Object.entries(template.prompts).forEach(([heading, prompts]) => {
-          allPrompts[heading] = prompts
-        })
-      }
-    })
-    return allPrompts
-  }, [])
-
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -88,19 +72,6 @@ export default function Editor() {
         heading: {
           levels: [1, 2, 3]
         }
-      }),
-      Placeholder.configure({
-        placeholder: ({ node }) => {
-          if (node.type.name === 'heading') {
-            return 'Heading...'
-          }
-          // Default placeholders handled by DynamicPlaceholder extension
-          return null
-        },
-        emptyEditorClass: 'is-editor-empty'
-      }),
-      DynamicPlaceholder.configure({
-        prompts: promptConfig
       })
     ],
     editorProps: {
@@ -158,10 +129,11 @@ export default function Editor() {
   }
 
   return (
-    <div className="flex-1 flex flex-col items-center loading-fade-in relative">
+    <div className="flex-1 flex overflow-hidden loading-fade-in relative">
+      <div className="flex-1 overflow-y-auto flex flex-col items-center">
         {/* Document Header with Title */}
         <div className="w-full max-w-3xl px-16 pt-8 pb-4 flex items-center gap-3">
-          <div className="text-accent-primary">
+          <div className="text-accent-primary shrink-0">
             {getIcon(activeDocument.icon, 'w-8 h-8')}
           </div>
           <div className="flex-1">
@@ -179,7 +151,7 @@ export default function Editor() {
             ) : (
               <h1 
                 onClick={() => setIsEditingTitle(true)}
-                className="text-3xl font-medium text-primary hover:text-secondary transition-colors cursor-text py-1 border-b border-transparent hover:border-border-subtle"
+                className="text-3xl font-medium text-primary hover:text-secondary transition-colors cursor-text py-1 border-b border-transparent hover:border-border-subtle truncate"
               >
                 {activeDocument.title || 'Untitled'}
               </h1>
@@ -189,6 +161,9 @@ export default function Editor() {
 
         <EditorContent editor={editor} className="flex-1 w-full max-w-3xl" />
       </div>
+
+      <EditorGuide document={activeDocument} />
+    </div>
   )
 }
 
