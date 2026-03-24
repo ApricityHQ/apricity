@@ -7,6 +7,7 @@ import * as Icons from 'lucide-react'
 import { useDocument } from '@/context/DocumentContext'
 import ExportPDFButton from '@/components/ExportPDFButton'
 import CompetitorGrid from '@/components/CompetitorGrid'
+import ReportChat from '@/components/ReportChat'
 
 /**
  * View Processing Page
@@ -191,7 +192,8 @@ export default function ViewPage() {
       </header>
 
       {/* Main content */}
-      <main className="flex-1 flex items-center justify-center p-8">
+      <main className="flex-1 flex overflow-hidden">
+        <div className={`flex-1 overflow-y-auto p-4 md:p-8 flex justify-center ${view.status !== 'completed' ? 'items-center' : ''}`}>
         {view.status === 'pending' && (
           <div className="max-w-md w-full">
             {/* Processing indicator */}
@@ -323,6 +325,10 @@ export default function ViewPage() {
             </Link>
           </div>
         )}
+        </div>
+
+        {/* AI Chat Sidebar */}
+        {view.status === 'completed' && <ReportChat reportId={viewId} />}
       </main>
     </div>
   )

@@ -28,6 +28,16 @@ async def init_db():
                 created_at TEXT NOT NULL
             )
         """)
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS messages (
+                id TEXT PRIMARY KEY,
+                report_id TEXT NOT NULL,
+                role TEXT NOT NULL,
+                content TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE
+            )
+        """)
         await db.commit()
 
 async def save_report(db: aiosqlite.Connection, user_id: str, prompt: str, result: dict):
@@ -66,3 +76,27 @@ async def get_report_by_id(db: aiosqlite.Connection, user_id: str, report_id: st
             "result": json.loads(row["result"]),
             "created_at": row["created_at"],
         }
+
+async def save_message(db: aiosqlite.Connection, report_id: str, role: str, content: str) -> str:
+    message_id = str(uuid.uuid4())
+    created_at = datetime.datetime.now(datetime.UTC).isoformat()
+    await db.execute(
+        "INSERT INTO messages (id, report_id, role, content, created_at) VALUES (?, ?, ?, ?, ?)",
+        (message_id, report_id, role, content, created_at)
+    )
+    await db.commit()
+    return message_id
+
+async def get_report_messages(db: aiosqlite.Connection, report_id: str) -> list[dict]:
+    async with db.execute("SELECT * FROM messages WHERE report_id = ? ORDER BY created_at ASC", (report_id,)) as cursor:
+        rows = await cursor.fetchall()
+        messages = []
+        for row in rows:
+            messages.append({
+                "id": row["id"],
+                "report_id": row["report_id"],
+                "role": row["role"],
+                "content": row["content"],
+                "created_at": row["created_at"],
+            })
+        return messages

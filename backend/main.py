@@ -18,8 +18,17 @@ from langgraph.graph import StateGraph, END
 from pdf_ingest import extract_pdf_text
 from text_chunking import chunk_text
 
-from db import init_db, get_db, save_report, get_user_reports, get_report_by_id
+from pydantic import BaseModel
+from fastapi.responses import StreamingResponse
+from db import init_db, get_db, save_report, get_user_reports, get_report_by_id, save_message, get_report_messages
 from auth import get_current_user_id
+
+class Message(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: list[Message]
 
 # -------------------------------------------------------------------
 # Setup
@@ -182,7 +191,7 @@ async def product_agent(state):
 # LangGraph Definition (Parallel Agents)
 # -------------------------------------------------------------------
 class GraphState(dict):
-    retriever: any
+    retriever: Any
     financial: str
     vc: str
     cto: str
@@ -321,6 +330,73 @@ async def get_report(
     if not report:
         raise HTTPException(status_code=404, detail="Report not found")
     return report
+
+@app.post("/chat/{report_id}")
+async def chat_with_report(
+    report_id: str,
+    request: ChatRequest,
+    user_id: str | None = Depends(get_current_user_id),
+    db: aiosqlite.Connection = Depends(get_db)
+):
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    report = await get_report_by_id(db, user_id, report_id)
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+        
+    if not request.messages:
+        raise HTTPException(status_code=400, detail="No messages provided")
+        
+    user_message = request.messages[-1].content
+    await save_message(db, report_id, "user", user_message)
+
+    async def generate():
+        import json
+        full_response = ""
+        # Build prompt context
+        report_context = json.dumps(report.get("result", {}))
+        
+        # We also pass the prior messages to retain memory in the LLM
+        llm_messages = [
+            ("system", "You are an AI assistant helping a startup founder refine and understand their generated report. Use Markdown. Be concise. Here is the full report context:\\n" + report_context)
+        ]
+        
+        for msg in request.messages[:-1]:
+            llm_messages.append((msg.role, msg.content))
+            
+        llm_messages.append(("human", user_message))
+        
+        try:
+            async for chunk in analysis_llm.astream(llm_messages):
+                if chunk.content:
+                    full_response += chunk.content
+                    # Vercel Data Stream Protocol Format: 0:"json encoded text"\n
+                    yield f'0:{json.dumps(chunk.content)}\n'
+                    
+            # Save the final compiled response to DB
+            await save_message(db, report_id, "assistant", full_response)
+        except Exception as e:
+            # Emit error stream format if needed: 3:"error message"\n
+            yield f'3:{json.dumps(str(e))}\n'
+
+    return StreamingResponse(generate(), media_type="text/plain")
+
+@app.get("/chat/{report_id}")
+async def get_chat_history(
+    report_id: str,
+    user_id: str | None = Depends(get_current_user_id),
+    db: aiosqlite.Connection = Depends(get_db)
+):
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+        
+    report = await get_report_by_id(db, user_id, report_id)
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+        
+    messages = await get_report_messages(db, report_id)
+    return {"messages": messages}
 
 
 
