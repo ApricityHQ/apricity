@@ -159,7 +159,7 @@ export default function ViewPage() {
           The requested view ID does not exist or has been deleted.
         </p>
         <Link 
-          href="/"
+          href="/workspace"
           className="px-4 py-2 bg-main border border-border-subtle rounded-lg text-sm text-primary hover:bg-surface transition-colors"
         >
           Return to Workspace
@@ -181,7 +181,7 @@ export default function ViewPage() {
             <ExportPDFButton data={view.data} viewId={viewId} />
           )}
           <Link 
-            href="/"
+            href="/workspace"
             className="text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1"
           >
             <Icons.ArrowLeft className="w-4 h-4" />
@@ -315,7 +315,7 @@ export default function ViewPage() {
               {view.error || 'Failed to generate view. Please try again.'}
             </p>
             <Link
-              href="/"
+              href="/workspace"
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-main rounded-lg hover:bg-secondary transition-colors"
             >
               <Icons.ArrowLeft className="w-4 h-4" />

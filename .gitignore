@@ -2,6 +2,8 @@
 .DS_Store
 Thumbs.db
 
+ssp.db
+
 # === IDEs ===
 .idea/
 .vscode/

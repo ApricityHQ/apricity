@@ -2,10 +2,9 @@
 
 import { createContext, useContext, useReducer, useEffect, useCallback, useRef, useMemo } from 'react'
 import { storage } from '@/utils/storage'
-
-
 import { calculateCoverage, getCharCount } from '@/utils/coverage'
 import { getArtifactTemplate } from '@/config/artifacts'
+import { useAuth } from '@clerk/nextjs'
 
 // Storage key for workspace
 const WORKSPACE_KEY = 'apricity-workspace'
@@ -37,7 +36,9 @@ const ACTIONS = {
   DELETE_FILE: 'DELETE_FILE',
   SET_SAVE_STATUS: 'SET_SAVE_STATUS',
   CREATE_VIEW: 'CREATE_VIEW',
-  UPDATE_VIEW: 'UPDATE_VIEW'
+  UPDATE_VIEW: 'UPDATE_VIEW',
+  SET_VIEWS: 'SET_VIEWS',
+  CLEAR_VIEWS: 'CLEAR_VIEWS'
 }
 
 // Reducer
@@ -189,6 +190,18 @@ function workspaceReducer(state, action) {
         }
       }
     }
+    case ACTIONS.SET_VIEWS: {
+      return {
+        ...state,
+        views: { ...state.views, ...action.payload }
+      }
+    }
+    case ACTIONS.CLEAR_VIEWS: {
+      return {
+        ...state,
+        views: {}
+      }
+    }
     default:
       return state
   }
@@ -201,6 +214,8 @@ const DocumentContext = createContext(null)
 export function DocumentProvider({ children }) {
   const [state, dispatch] = useReducer(workspaceReducer, initialState)
   const saveTimeoutRef = useRef(null)
+  
+  const { isSignedIn, getToken } = useAuth()
 
   // Load workspace on mount
   useEffect(() => {
@@ -251,6 +266,50 @@ export function DocumentProvider({ children }) {
     
     initWorkspace()
   }, [])
+
+  // Sync server reports when auth state changes
+  useEffect(() => {
+    async function fetchServerReports() {
+      if (isSignedIn) {
+        try {
+          const token = await getToken();
+          const response = await fetch('/api/reports', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.reports) {
+              const serverViews = {};
+              data.reports.forEach(report => {
+                serverViews[report.id] = {
+                  id: report.id,
+                  content: report.prompt,
+                  status: 'completed',
+                  data: report.result,
+                  createdAt: report.created_at
+                };
+              });
+              dispatch({
+                type: ACTIONS.SET_VIEWS,
+                payload: serverViews
+              })
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch server reports", error)
+        }
+      } else if (isSignedIn === false) {
+        dispatch({ type: ACTIONS.CLEAR_VIEWS })
+      }
+    }
+    
+    if (state.isLoaded) {
+      fetchServerReports();
+    }
+  }, [isSignedIn, getToken, state.isLoaded])
 
   // Debounced save function
   const saveWorkspace = useCallback(() => {

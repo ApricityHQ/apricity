@@ -3,14 +3,17 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import * as Icons from 'lucide-react'
+import Link from 'next/link'
 import { useDocument } from '@/context/DocumentContext'
 import { useTheme } from '@/context/ThemeContext'
+import { SignInButton, UserButton, useAuth } from '@clerk/nextjs'
 
 import { extractText } from '@/utils/coverage'
 
 export default function TopBar() {
   const router = useRouter()
   const { theme, toggleTheme } = useTheme()
+  const { isSignedIn } = useAuth()
   const { startupName, setStartupName, saveStatus, documents, createView, fileList } = useDocument()
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState(startupName)
@@ -65,7 +68,7 @@ export default function TopBar() {
       createView(viewId, aggregatedContent)
 
       // Navigate to view page
-      router.push(`/${viewId}`)
+      router.push(`/workspace/${viewId}`)
     } catch (error) {
       console.error('Failed to develop view:', error)
       // Optional: Show error toast here
@@ -105,7 +108,7 @@ export default function TopBar() {
   return (
     <header className="h-14 px-6 flex items-center justify-between border-b border-border-subtle bg-main">
       <div className="flex items-center gap-3">
-        <span className="text-base">🍊</span>
+        <Link href="/dashboard" className="text-base cursor-pointer hover:opacity-80 transition-opacity" title="Back to Dashboard">🍊</Link>
         {isEditing ? (
           <input
             ref={inputRef}
@@ -150,6 +153,18 @@ export default function TopBar() {
           {isGenerating && <Icons.Loader2 className="w-3 h-3 animate-spin" />}
           {isGenerating ? 'Sending...' : 'Develop a View'}
         </button>
+
+        <div className="w-px h-4 bg-border-subtle" />
+
+        {isSignedIn ? (
+          <UserButton afterSignOutUrl="/" />
+        ) : (
+          <SignInButton mode="modal">
+            <button className="px-3 py-1.5 text-xs font-medium bg-primary text-main rounded-md hover:bg-secondary transition-colors">
+              Sign In
+            </button>
+          </SignInButton>
+        )}
 
         <div className="w-px h-4 bg-border-subtle" />
 

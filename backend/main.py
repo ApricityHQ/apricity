@@ -1,8 +1,10 @@
 import asyncio
 import os
+from contextlib import asynccontextmanager
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Depends
 from typing import Any, Dict
+import aiosqlite
 
 from company_search import CompanySearchService
 # from social_signals import SocialSignalsService
@@ -16,11 +18,20 @@ from langgraph.graph import StateGraph, END
 from pdf_ingest import extract_pdf_text
 from text_chunking import chunk_text
 
+from db import init_db, get_db, save_report, get_user_reports, get_report_by_id
+from auth import get_current_user_id
+
 # -------------------------------------------------------------------
 # Setup
 # -------------------------------------------------------------------
 load_dotenv()
-app = FastAPI(title="Startup Success Predictor - Multi Agent")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    yield
+
+app = FastAPI(title="Startup Success Predictor - Multi Agent", lifespan=lifespan)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
@@ -210,7 +221,9 @@ app_graph = graph.compile()
 @app.post("/view")
 async def view_analysis(
     prompt: str = Form(...),
-    files: list[UploadFile] | None = File(None)
+    files: list[UploadFile] | None = File(None),
+    user_id: str | None = Depends(get_current_user_id),
+    db: aiosqlite.Connection = Depends(get_db)
 ):
     if not prompt.strip():
         raise HTTPException(status_code=400, detail="Prompt cannot be empty")
@@ -277,7 +290,37 @@ async def view_analysis(
     # else:
     #     response["customer_voice_pmf_signal"] = social_signals_result
 
+    if user_id:
+        try:
+            report_id = await save_report(db, user_id, prompt, response)
+            response["report_id"] = report_id
+        except Exception as e:
+            print(f"Failed to save report: {e}")
+
     return response
+
+@app.get("/reports")
+async def list_reports(
+    user_id: str | None = Depends(get_current_user_id),
+    db: aiosqlite.Connection = Depends(get_db)
+):
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    reports = await get_user_reports(db, user_id)
+    return {"reports": reports}
+
+@app.get("/reports/{report_id}")
+async def get_report(
+    report_id: str,
+    user_id: str | None = Depends(get_current_user_id),
+    db: aiosqlite.Connection = Depends(get_db)
+):
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    report = await get_report_by_id(db, user_id, report_id)
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+    return report
 
 
 

@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from '@/context/ThemeContext'
 import { DocumentProvider } from '@/context/DocumentContext'
 import "./globals.css";
@@ -15,14 +16,16 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} antialiased`}>
-        <ThemeProvider>
-          <DocumentProvider>
-            {children}
-          </DocumentProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${inter.variable} antialiased`}>
+          <ThemeProvider>
+            <DocumentProvider>
+              {children}
+            </DocumentProvider>
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

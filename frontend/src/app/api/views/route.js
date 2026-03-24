@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
+import { auth } from '@clerk/nextjs/server'
 
 export async function POST(request) {
+  const { getToken } = await auth();
+  const token = await getToken();
+
   try {
     const contentType = request.headers.get("content-type") || "";
     let formData;
@@ -25,9 +29,15 @@ export async function POST(request) {
 
     try {
       // Forward to Python backend
+      const headers = {}
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`
+      }
+      
       const response = await fetch(`${backendUrl}/view`, {
         method: "POST",
         body: formData,
+        headers
       });
 
       if (!response.ok) {

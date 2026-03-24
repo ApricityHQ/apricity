@@ -5,6 +5,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import * as Icons from 'lucide-react'
 import { ARTIFACT_TEMPLATES } from '@/config/artifacts'
 import { useDocument } from '@/context/DocumentContext'
+import Link from 'next/link'
 
 /**
  * Get Lucide icon component by name
@@ -40,7 +41,8 @@ export default function LeftRail() {
     setActiveFile,
     deleteDocument,
     uploadFile,
-    deleteFile 
+    deleteFile,
+    views
   } = useDocument()
 
   const handleCreateDocument = (template) => {
@@ -65,6 +67,10 @@ export default function LeftRail() {
   // Separate custom from templates for cleaner rendering
   const regularTemplates = ARTIFACT_TEMPLATES.filter(t => t.id !== 'custom')
   const customTemplate = ARTIFACT_TEMPLATES.find(t => t.id === 'custom')
+
+  const pastReports = Object.values(views || {})
+    .filter(view => view.status === 'completed')
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 
   return (
     <aside 
@@ -250,8 +256,36 @@ export default function LeftRail() {
             ))}
           </>
         )}
+
+        {/* Generated Reports section */}
+        {pastReports.length > 0 && (
+          <>
+            {(isExpanded || isDropdownOpen) && (
+              <div className="px-4 py-2 mt-2 text-xs font-medium text-faint uppercase tracking-wider border-t border-border-subtle">
+                Generated Reports
+              </div>
+            )}
+            {pastReports.map((report) => (
+              <Link
+                href={`/workspace/${report.id}`}
+                key={report.id}
+                className={`group flex items-center gap-2 mx-2 rounded-lg transition-colors hover:bg-main text-secondary ${(isExpanded || isDropdownOpen) ? 'px-3 py-2' : 'w-8 h-8 justify-center'}`}
+                title="View Analysis Report"
+              >
+                <span className="flex-shrink-0 text-faint group-hover:text-accent-primary">
+                  <Icons.Sparkles className="w-4 h-4" />
+                </span>
+                {(isExpanded || isDropdownOpen) && (
+                  <span className="text-sm truncate flex-1">
+                    {new Date(report.createdAt).toLocaleDateString()} Report
+                  </span>
+                )}
+              </Link>
+            ))}
+          </>
+        )}
         
-        {documentList.length === 0 && fileList.length === 0 && (isExpanded || isDropdownOpen) && (
+        {documentList.length === 0 && fileList.length === 0 && pastReports.length === 0 && (isExpanded || isDropdownOpen) && (
           <div className="px-4 py-8 text-center text-xs text-faint">
             No documents yet.<br />Click + to create one.
           </div>
