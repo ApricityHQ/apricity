@@ -67,7 +67,7 @@ def build_retriever(content: str):
         raise ValueError("No content available to index")
 
     vector_store = Chroma.from_documents(chunks, embeddings)
-    return vector_store.as_retriever()
+    return vector_store.as_retriever(), len(chunks)
 
 
 def format_docs(docs):
@@ -130,61 +130,78 @@ PRODUCT_PROMPT = agent_prompt(
 
 
 # -------------------------------------------------------------------
+# Retrieval Queries (Keyword-focused)
+# -------------------------------------------------------------------
+RETRIEVAL_QUERIES = {
+    "financial": "revenue model cost structure financial viability forecasts ROI",
+    "vc": "investment readiness scalability market traction risk factors exit potential",
+    "cto": "technical feasibility architecture innovation scalability technical risks",
+    "marketing": "target market go-to-market strategy brand positioning customer acquisition competitive landscape",
+    "product": "product-market fit user needs feature set differentiation adoption barriers"
+}
+
+
+# -------------------------------------------------------------------
 # Agent Nodes
 # -------------------------------------------------------------------
 async def financial_agent(state):
     retriever = state["retriever"]
+    query = RETRIEVAL_QUERIES["financial"]
     chain = (
         {"context": retriever | format_docs}
         | FINANCIAL_PROMPT
         | analysis_llm
         | StrOutputParser()
     )
-    return {"financial": await chain.ainvoke("")}
+    return {"financial": await chain.ainvoke(query)}
 
 
 async def vc_agent(state):
     retriever = state["retriever"]
+    query = RETRIEVAL_QUERIES["vc"]
     chain = (
         {"context": retriever | format_docs}
         | VC_PROMPT
         | analysis_llm
         | StrOutputParser()
     )
-    return {"vc": await chain.ainvoke("")}
+    return {"vc": await chain.ainvoke(query)}
 
 
 async def cto_agent(state):
     retriever = state["retriever"]
+    query = RETRIEVAL_QUERIES["cto"]
     chain = (
         {"context": retriever | format_docs}
         | CTO_PROMPT
         | analysis_llm
         | StrOutputParser()
     )
-    return {"cto": await chain.ainvoke("")}
+    return {"cto": await chain.ainvoke(query)}
 
 
 async def marketing_agent(state):
     retriever = state["retriever"]
+    query = RETRIEVAL_QUERIES["marketing"]
     chain = (
         {"context": retriever | format_docs}
         | MARKETING_PROMPT
         | analysis_llm
         | StrOutputParser()
     )
-    return {"marketing": await chain.ainvoke("")}
+    return {"marketing": await chain.ainvoke(query)}
 
 
 async def product_agent(state):
     retriever = state["retriever"]
+    query = RETRIEVAL_QUERIES["product"]
     chain = (
         {"context": retriever | format_docs}
         | PRODUCT_PROMPT
         | analysis_llm
         | StrOutputParser()
     )
-    return {"product": await chain.ainvoke("")}
+    return {"product": await chain.ainvoke(query)}
 
 
 # -------------------------------------------------------------------
@@ -251,8 +268,10 @@ async def view_analysis(
 
     combined_text = "\n\n".join([text for text in [prompt, *extracted_texts] if text])
 
+    retriever, chunk_count = build_retriever(combined_text)
+
     analysis_task = app_graph.ainvoke({
-        "retriever": build_retriever(combined_text)
+        "retriever": retriever
     })
     competitors_task = company_search_service.find_top_competitors_for_idea(prompt)
     # social_signals_task = social_signals_service.summarize_customer_voice_signals(request.prompt)
@@ -271,6 +290,7 @@ async def view_analysis(
     if isinstance(analysis_result, Exception):
         raise HTTPException(status_code=500, detail=f"Analysis failed: {analysis_result}")
 
+    print ("chunk count: ", chunk_count)
     response: Dict[str, Any] = {
         "financial_analysis": analysis_result.get("financial"),
         "vc_analysis": analysis_result.get("vc"),
