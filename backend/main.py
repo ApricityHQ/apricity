@@ -134,6 +134,54 @@ PRODUCT_PROMPT = agent_prompt(
     "- Product-market fit\n- User needs\n- Feature set\n- Differentiation\n- Adoption barriers"
 )
 
+AGGREGATOR_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", """You are a Senior Startup Evaluator synthesizing analyses from multiple experts.
+
+Rules:
+- Be concise and factual
+- DO NOT use conversational phrases
+- DO NOT say: "Certainly", "Here is", "Here's", "In conclusion"
+- No filler text
+
+You will receive analyses from 5 experts (Financial, VC, CTO, Marketing, Product) and a competitor landscape.
+
+Produce EXACTLY this output format:
+
+## Overall Assessment
+<3-5 bullet points synthesizing the key findings across all perspectives>
+
+## Key Strengths
+<2-3 bullet points>
+
+## Critical Risks
+<2-3 bullet points>
+
+## Success Probability: <Low|Medium|High>
+<1 sentence justification>
+"""),
+    ("human", """Expert Analyses:
+
+FINANCIAL ANALYSIS:
+{financial}
+
+VC ANALYSIS:
+{vc}
+
+CTO ANALYSIS:
+{cto}
+
+MARKETING ANALYSIS:
+{marketing}
+
+PRODUCT ANALYSIS:
+{product}
+
+COMPETITOR LANDSCAPE:
+{competitors}
+
+Provide your overall evaluation.""")
+])
+
 
 # -------------------------------------------------------------------
 # Retrieval Queries (Keyword-focused)
@@ -312,6 +360,7 @@ async def view_analysis(
     logger.info("Analysis complete. Agent result keys: %s", list(analysis_result.keys()))
 
     response: Dict[str, Any] = {
+        "overall_evaluation": overall_evaluation,
         "financial_analysis": analysis_result.get("financial"),
         "vc_analysis": analysis_result.get("vc"),
         "cto_analysis": analysis_result.get("cto"),
