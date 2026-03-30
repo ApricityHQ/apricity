@@ -359,6 +359,23 @@ async def view_analysis(
 
     logger.info("Analysis complete. Agent result keys: %s", list(analysis_result.keys()))
 
+    competitors_summary = ""
+    if not isinstance(competitors_result, Exception):
+        competitors_summary = "\n".join(
+            f"- {c.get('name', 'Unknown')}: {c.get('description', '')}"
+            for c in competitors_result.get("competitors", [])
+        )
+
+    aggregator_chain = AGGREGATOR_PROMPT | analysis_llm | StrOutputParser()
+    overall_evaluation = await aggregator_chain.ainvoke({
+        "financial": analysis_result.get("financial", ""),
+        "vc": analysis_result.get("vc", ""),
+        "cto": analysis_result.get("cto", ""),
+        "marketing": analysis_result.get("marketing", ""),
+        "product": analysis_result.get("product", ""),
+        "competitors": competitors_summary,
+    })
+
     response: Dict[str, Any] = {
         "overall_evaluation": overall_evaluation,
         "financial_analysis": analysis_result.get("financial"),
