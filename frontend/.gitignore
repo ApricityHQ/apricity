@@ -56,13 +56,6 @@ wheels/
 REQS.md
 BLOG.md
 uv.lock
-*.*/
-!src/app/sign-in/
-!src/app/sign-in/[[][[]...sign-in[]][]]/
-!src/app/sign-in/[[][[]...sign-in[]][]]/page.js
-!src/app/sign-up/
-!src/app/sign-up/[[][[]...sign-up[]][]]/
-!src/app/sign-up/[[][[]...sign-up[]][]]/page.js
 
 data/
 
