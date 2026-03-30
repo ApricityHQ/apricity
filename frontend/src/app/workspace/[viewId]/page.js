@@ -63,7 +63,9 @@ export default function ViewPage() {
   const view = views?.[viewId]
   
   const [currentStage, setCurrentStage] = useState(0)
+  const [isChatOpen, setIsChatOpen] = useState(false)
   const isFetchingRef = useRef(false)
+  const hasWorkspaceChat = view?.status === 'completed' && Boolean(view?.data?.report_id)
 
   // Animation for stages
   useEffect(() => {
@@ -79,6 +81,12 @@ export default function ViewPage() {
       setCurrentStage(STAGES.length - 1)
     }
   }, [view?.status])
+
+  useEffect(() => {
+    if (!hasWorkspaceChat) {
+      setIsChatOpen(false)
+    }
+  }, [hasWorkspaceChat])
 
   // Trigger analysis if pending
   useEffect(() => {
@@ -340,9 +348,29 @@ export default function ViewPage() {
         )}
         </div>
 
-        {/* AI Chat Sidebar */}
-        {view.status === 'completed' && <ReportChat reportId={viewId} />}
       </main>
+
+      {hasWorkspaceChat && isChatOpen && (
+        <ReportChat
+          reportId={view.data.report_id}
+          onClose={() => setIsChatOpen(false)}
+        />
+      )}
+
+      {hasWorkspaceChat && (
+        <button
+          type="button"
+          onClick={() => setIsChatOpen(open => !open)}
+          aria-label={isChatOpen ? 'Hide workspace chat' : 'Show workspace chat'}
+          className={`fixed bottom-4 right-4 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full border shadow-lg transition-all sm:bottom-6 sm:right-6 ${
+            isChatOpen
+              ? 'border-accent-primary bg-accent-primary text-main'
+              : 'border-border-subtle bg-main text-primary hover:border-accent-primary hover:text-accent-primary'
+          }`}
+        >
+          <Icons.Bot className="h-6 w-6" />
+        </button>
+      )}
     </div>
   )
 }

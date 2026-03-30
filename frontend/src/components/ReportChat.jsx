@@ -1,10 +1,46 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import { Sparkles, Send, User, Bot, Loader2 } from 'lucide-react'
+import { TextStreamChatTransport } from 'ai'
+import { Sparkles, Send, Bot, Loader2, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
-export default function ReportChat({ reportId }) {
+function normalizeMessage(message, index) {
+  const textContent =
+    typeof message?.content === 'string'
+      ? message.content
+      : Array.isArray(message?.parts)
+        ? message.parts
+            .filter(part => part?.type === 'text' && typeof part.text === 'string')
+            .map(part => part.text)
+            .join('\n')
+        : ''
+
+  return {
+    id: message?.id || `${message?.role || 'message'}-${index}`,
+    role: message?.role === 'assistant' || message?.role === 'system' ? message.role : 'user',
+    parts: Array.isArray(message?.parts) && message.parts.length > 0
+      ? message.parts
+      : [{ type: 'text', text: textContent }]
+  }
+}
+
+function getMessageText(message) {
+  if (typeof message?.content === 'string') {
+    return message.content
+  }
+
+  if (!Array.isArray(message?.parts)) {
+    return ''
+  }
+
+  return message.parts
+    .filter(part => part?.type === 'text' && typeof part.text === 'string')
+    .map(part => part.text)
+    .join('\n')
+}
+
+export default function ReportChat({ reportId, onClose }) {
   const [initialMessages, setInitialMessages] = useState([])
   const [isInitializing, setIsInitializing] = useState(true)
 
@@ -14,7 +50,7 @@ export default function ReportChat({ reportId }) {
         const res = await fetch(`/api/chat/history?reportId=${reportId}`)
         if (res.ok) {
           const data = await res.json()
-          setInitialMessages(data)
+          setInitialMessages(Array.isArray(data) ? data.map(normalizeMessage) : [])
         }
       } catch (err) {
         console.error("Failed to load chat history", err)
@@ -27,40 +63,77 @@ export default function ReportChat({ reportId }) {
 
   if (isInitializing) {
     return (
-      <div className="flex flex-col h-full bg-surface border-l border-border-subtle w-80 lg:w-[400px] shrink-0 items-center justify-center text-faint">
+      <div className="fixed bottom-20 right-4 z-40 flex h-[min(70vh,36rem)] w-[min(24rem,calc(100vw-2rem))] flex-col items-center justify-center rounded-2xl border border-border-subtle bg-surface text-faint shadow-2xl sm:bottom-24 sm:right-6">
         <Loader2 className="w-6 h-6 animate-spin mb-4 text-accent-primary" />
         <p className="text-sm font-medium">Loading workspace chat...</p>
       </div>
     )
   }
 
-  return <ChatUI reportId={reportId} initialMessages={initialMessages} />
+  return <ChatUI reportId={reportId} initialMessages={initialMessages} onClose={onClose} />
 }
 
-function ChatUI({ reportId, initialMessages }) {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: '/api/chat',
-    body: { reportId },
-    initialMessages
+function ChatUI({ reportId, initialMessages, onClose }) {
+  const { messages, sendMessage, status, error } = useChat({
+    initialMessages,
+    transport: new TextStreamChatTransport({
+      api: '/api/chat'
+    })
   })
-
+  const [draft, setDraft] = useState('')
   const messagesEndRef = useRef(null)
+  const isLoading = status === 'submitted' || status === 'streaming'
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  async function handleSubmit(event) {
+    event?.preventDefault?.()
+
+    const trimmedDraft = draft.trim()
+    if (!trimmedDraft || isLoading) {
+      return
+    }
+
+    setDraft('')
+
+    try {
+      await sendMessage(
+        { text: trimmedDraft },
+        {
+          body: { reportId }
+        }
+      )
+    } catch (submitError) {
+      console.error('Failed to send chat message', submitError)
+      setDraft(trimmedDraft)
+    }
+  }
+
   return (
-    <div className="flex flex-col h-full bg-surface border-l border-border-subtle w-80 lg:w-[400px] shrink-0">
+    <div className="fixed bottom-20 right-4 z-40 flex h-[min(70vh,36rem)] w-[min(24rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-border-subtle bg-surface shadow-2xl sm:bottom-24 sm:right-6">
       {/* Header */}
       <div className="p-4 border-b border-border-subtle bg-main flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-accent-primary" />
           <h2 className="font-semibold text-primary text-sm">Workspace AI</h2>
         </div>
-        {messages.length > 0 && (
-          <span className="text-xs text-faint font-medium bg-surface px-2 py-0.5 rounded-full border border-border-subtle">{messages.length} messages</span>
-        )}
+        <div className="flex items-center gap-2">
+          {messages.length > 0 && (
+            <span className="text-xs text-faint font-medium bg-surface px-2 py-0.5 rounded-full border border-border-subtle">{messages.length} messages</span>
+          )}
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border-subtle bg-surface text-secondary transition-colors hover:text-primary"
+              aria-label="Close workspace chat"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Message List */}
@@ -89,10 +162,10 @@ function ChatUI({ reportId, initialMessages }) {
                 }`}
               >
                 {/* extremely primitive markdown rendering for prototype */}
-                {m.content.split('\n').map((line, i) => (
+                {getMessageText(m).split('\n').map((line, i, lines) => (
                   <span key={i}>
                     {line}
-                    {i !== m.content.split('\n').length - 1 && <br />}
+                    {i !== lines.length - 1 && <br />}
                   </span>
                 ))}
               </div>
@@ -118,10 +191,15 @@ function ChatUI({ reportId, initialMessages }) {
 
       {/* Input Area */}
       <div className="p-4 bg-main border-t border-border-subtle shrink-0">
+        {error && (
+          <div className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+            Something went wrong while sending that message.
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="relative flex items-end gap-2 bg-surface border border-border-subtle rounded-xl p-1.5 focus-within:border-accent-primary transition-colors shadow-sm">
           <textarea
-            value={input}
-            onChange={handleInputChange}
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
             placeholder="Ask AI to analyze or rewrite..."
             className="w-full bg-transparent resize-none outline-none py-2 pl-2 text-sm text-primary placeholder:text-faint min-h-[40px] max-h-32"
             rows={1}
@@ -135,7 +213,7 @@ function ChatUI({ reportId, initialMessages }) {
           />
           <button 
             type="submit" 
-            disabled={isLoading || !input.trim()}
+            disabled={isLoading || !draft.trim()}
             className="p-2 text-main bg-accent-primary hover:bg-accent-secondary rounded-lg disabled:opacity-50 disabled:bg-surface disabled:text-faint transition-all shrink-0 shadow-sm"
           >
             <Send className="w-4 h-4" />

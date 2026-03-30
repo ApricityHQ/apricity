@@ -1,5 +1,18 @@
 import { auth } from '@clerk/nextjs/server'
 
+function toUiMessage(message) {
+  return {
+    id: message.id,
+    role: message.role,
+    parts: [
+      {
+        type: 'text',
+        text: message.content || ''
+      }
+    ]
+  }
+}
+
 export async function GET(req) {
   try {
     const { userId, getToken } = await auth()
@@ -19,9 +32,7 @@ export async function GET(req) {
     if (!res.ok) return new Response(`Backend Error: ${res.status}`, { status: res.status })
     
     const data = await res.json()
-    // AI SDK 'useChat' expects specific keys, ensure format maps correctly.
-    // Our DB has id, role, content, created_at which perfectly matches the SDK requirements in general
-    return new Response(JSON.stringify(data.messages || []), {
+    return new Response(JSON.stringify((data.messages || []).map(toUiMessage)), {
       headers: { "Content-Type": "application/json" }
     })
   } catch (error) {
