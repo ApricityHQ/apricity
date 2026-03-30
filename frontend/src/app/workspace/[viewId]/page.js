@@ -275,10 +275,23 @@ export default function ViewPage() {
                 </span>
               </div>
               
+              {/* Overall Evaluation — prominently at top */}
+              {view.data?.overall_evaluation && (
+                <div className="mb-8 p-6 bg-accent-subtle rounded-lg border border-accent-primary/20">
+                  <h3 className="text-sm font-semibold uppercase text-accent-primary mb-3">
+                    Overall Evaluation
+                  </h3>
+                  {renderResultValue(view.data.overall_evaluation)}
+                </div>
+              )}
+
               <div className="prose prose-sm max-w-none text-secondary">
                 {view.data && typeof view.data === 'object' &&
                   Object.entries(view.data)
-                    .filter(([key]) => !['competitors', 'competitor_search_status', 'idea_search_sentence', 'competitor_search_error'].includes(key))
+                    .filter(([key]) => ![
+                      'competitors', 'competitor_search_status', 'idea_search_sentence',
+                      'competitor_search_error', 'overall_evaluation', 'report_id'
+                    ].includes(key))
                     .map(([key, value]) => (
                       <div key={key} className="mb-6">
                         <h3 className="text-sm font-semibold uppercase text-primary mb-2">
