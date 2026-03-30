@@ -1,0 +1,554 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{adjustbox}
+\usepackage{ragged2e}
+\usepackage[colorlinks=true, linkcolor=black, urlcolor=black, citecolor=black]{hyperref}
+
+% Theme setup
+\usetheme{CambridgeUS}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+
+% Header & Footer (no text)
+\setbeamertemplate{headline}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex]{section in head/foot}%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex]{subsection in head/foot}%
+  \end{beamercolorbox}%
+}
+
+\setbeamertemplate{footline}{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex,center]{author in head/foot}%
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+% Fonts
+\setbeamerfont{title}{size=\Large}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\normalsize}
+\setbeamerfont{date}{size=\small}
+\setbeamerfont{frametitle}{size=\Large}
+
+\title{Apricity : Startup Success Predictor using Multi-Agent System}
+\author[Group 8]{
+\textbf{Group 8}\\[6pt]
+\begin{tabular}{ll}
+Darwin Thomas & 22CSB13 MDL22CS065 \\
+K V Varun Krishnan & 22CSB30 MDL22CS114 \\
+Manu S Panicker & 22CSB31 MDL22CS119 \\
+M Arjun Krishna & 22CSB32 MDL22CS122
+\end{tabular}
+}
+\institute{\textbf{Model Engineering College}}
+\date{October 2025}
+
+\begin{document}
+
+% ---------------- Title Page ----------------
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% ---------------- Table of Contents ----------------
+\begin{frame}{Contents}
+\tableofcontents[sections={1-8}]
+\end{frame}
+
+\begin{frame}{Contents}
+\tableofcontents[sections={9-16}]
+\end{frame}
+
+% ======================== INTRODUCTION ========================
+\section{Introduction}
+
+\begin{frame}
+\centering
+\Huge \textbf{Introduction}
+\end{frame}
+
+\begin{frame}{Introduction}
+\begin{itemize}
+\item Apricity aims to assist founders and investors by providing fast, data-driven evaluation of startup viability
+\item Designed as an AI-powered software prototype that simulates expert-level startup assessment through autonomous agents
+\item Employs a multi-agent architecture where each agent represents a domain expert such as Finance, Technology, Marketing, Sales, and Product
+\item Integrates Large Language Models with Retrieval-Augmented Generation (RAG) to ensure informed, context-aware, and explainable predictions
+\item Generates structured insights including risk analysis, strengths, weaknesses, and improvement suggestions in real time
+
+\end{itemize}
+\end{frame}
+
+
+% ======================== FEATURES ========================
+\section{Features}
+
+\begin{frame}
+\centering
+\Huge \textbf{Features}
+\end{frame}
+
+\begin{frame}{Key Features of the System}
+\begin{itemize}
+    \item \textbf{AI-Powered Evaluation:} Uses large language models to assess startup viability across multiple dimensions.
+    \item \textbf{Multi-Agent Architecture:} Independent agents simulate domain experts such as Financial Analyst, VC, CTO, Marketing, Sales, and Product specialists.
+    \item \textbf{Retrieval-Augmented Generation (RAG):} Grounds evaluations using up-to-date external knowledge sources for improved accuracy.
+    
+    \item \textbf{Real-Time Feedback:} Generates comprehensive startup assessments within minutes.
+    \item \textbf{Modular and Scalable Design:} Agents can be added, removed, or customized for different industries and evaluation criteria.
+\end{itemize}
+\end{frame}
+
+
+% ======================== PURPOSE ========================
+\section{Purpose and Scope}
+
+\begin{frame}
+\centering
+\Huge \textbf{Purpose and Scope}
+\end{frame}
+
+\begin{frame}{Purpose and Scope}
+\begin{itemize}
+    \item Defines the design and implementation of an AI-driven system for predicting startup success
+    \item Captures both functional and non-functional requirements of the Startup Success Predictor software prototype
+    \item Simulates expert-driven startup evaluation using autonomous multi-agent reasoning
+    \item Focuses on software components including agent orchestration, retrieval pipeline, and evaluation logic
+    \item Provides structured, explainable assessments across finance, technology, market, sales, and product domains
+    \item Designed to be extensible for future integration with real-world datasets, investor tools, and decision-support platforms
+\end{itemize}
+\end{frame}
+
+
+
+% ======================== PROBLEM STATEMENT ========================
+\section{Problem Statement}
+
+\begin{frame}
+\centering
+\Huge \textbf{Problem Statement}
+\end{frame}
+
+\begin{frame}{Problem Statement}
+\begin{itemize}
+    \item Startup evaluation today relies heavily on manual expert reviews.
+    \item These processes are slow, expensive, and difficult to scale.
+    \item Early-stage founders often lack access to structured, expert-level feedback.
+\end{itemize}
+\end{frame}
+
+% ======================== PROPOSED SOLUTION ========================
+\section{Proposed Solution}
+
+\begin{frame}
+\centering
+\Huge \textbf{Proposed Solution}
+\end{frame}
+
+\begin{frame}{Proposed Solution}
+\begin{itemize}
+    \item An AI-driven multi-agent system that simulates expert startup evaluation.
+    \item Each agent represents a domain expert (finance, product, market, etc.).
+    \item Produces structured insights instead of a single opaque prediction.
+\end{itemize}
+\end{frame}
+
+% ======================== PROGRESS OVERVIEW ========================
+% ======================== UPDATED PROGRESS OVERVIEW ========================
+\section{Project Progress Overview}
+
+\begin{frame}
+\centering
+\Huge \textbf{Project Progress Overview}
+\end{frame}
+
+\begin{frame}{Project Progress Overview (Current)}
+\begin{itemize}
+    \item Overall Status: \textbf{$\sim$90\%} core MVP pipeline implemented
+    \item Frontend: Guided startup workspace (templates + rich-text editor), autosave, PDF upload + viewer
+    \item Backend: FastAPI endpoint runs \textbf{multi-agent analysis} with RAG chunking + retrieval
+    \item Web enrichment: \textbf{Exa API} competitor discovery implemented (structured competitor list)
+    \item Report: Results rendered in UI + \textbf{PDF export implemented} via \textbf{html2pdf.js}
+\end{itemize}
+\end{frame}
+
+% ======================== SYSTEM FLOW DIAGRAM ========================
+\section{System Flow}
+
+\begin{frame}
+\centering
+\Huge \textbf{System Flow Diagram}
+\end{frame}
+
+\begin{frame}{End-to-End System Flow}
+\centering
+\includegraphics[
+    width=0.9\textwidth,
+    height=0.75\textheight,
+    keepaspectratio
+]{Block.png}
+
+\vspace{0.5em}
+\small Flow diagram showing end-to-end data movement across system modules.
+\end{frame}
+
+
+% ======================== FLOW EXPLANATION ========================
+
+\begin{frame}{System Flow Explanation (1/2)}
+\small
+\begin{enumerate}
+    \item \textbf{User Input → Workspace (Frontend):}  
+    User fills guided startup sections using artifact templates (rich-text editor) and can upload a PDF for reference.
+
+    \item \textbf{Workspace → Local Persistence:}  
+    Documents, files, and view state are autosaved to \textbf{IndexedDB} (debounced) for reliability across refreshes.
+
+    \item \textbf{Workspace → “Develop a View”:}  
+    Frontend aggregates all document content into a single analysis prompt and creates a new \texttt{viewId} with \texttt{pending} status.
+
+    \item \textbf{View Page → Analysis Request:}  
+    UI shows progress stages and sends the aggregated prompt to the internal API endpoint \texttt{/api/views}.
+
+    \item \textbf{API Route → Backend Forwarding Setup:}  
+    Next.js API validates the request and forwards it to the Python backend endpoint \texttt{/view}.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{System Flow Explanation (2/2)}
+\small
+\setcounter{enumi}{5}
+\begin{enumerate}
+    \item \textbf{Next.js API → FastAPI Backend:}  
+    The prompt is posted to \texttt{POST /view} for analysis.
+
+    \item \textbf{Backend → RAG Context Preparation:}  
+    Input is chunked, embedded (OpenAI embeddings), and indexed in \textbf{Chroma} to enable retrieval during agent reasoning.
+
+    \item \textbf{Backend → Multi-Agent Evaluation:}  
+    \textbf{LangGraph} runs domain agents (Finance, VC, CTO, Marketing, Product) in parallel the shared retriever.
+
+    \item \textbf{Backend → Web Enrichment (Competitors):}  
+    \textbf{Exa API} is used to discover and enrich top competitors into a structured competitor dataset (disabled if \texttt{EXA\_API\_KEY} is missing).
+
+    \item \textbf{Backend → Structured JSON Response:}  
+    Backend returns agent analyses + competitor search status + competitor list as JSON.
+
+    \item \textbf{Frontend → Results Rendering \& Storage:}  
+    The view is marked \texttt{completed} (or \texttt{error}), results are rendered section-wise, and stored in the workspace state for later access.
+
+    \item \textbf{Frontend → Report Export:}  
+    User exports a styled A4 PDF report using \textbf{html2pdf.js} (markdown rendering supported for agent outputs).
+\end{enumerate}
+\end{frame}
+
+
+% ======================== INPUT MODULE ========================
+\section{Input Module (React / Next.js)}
+
+\begin{frame}
+\centering
+\Huge \textbf{Input Module}
+\end{frame}
+
+\begin{frame}{Input Module – Planned Functionality}
+\begin{itemize}
+    \item Collect startup inputs (problem, solution, market, team, funding, risks)
+    \item Support document uploads (pitch/report) as additional context
+    \item Normalize and prepare input into a single structured context for analysis
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Input Module – Current Implementation}
+\begin{itemize}
+    \item Implemented a \textbf{workspace-style UI} (Next.js + React)
+    \item Rich-text editor implemented using \textbf{TipTap} with guided templates (artifacts)
+    \item Dynamic placeholder prompts help users fill required sections
+    \item \textbf{Autosave implemented} using IndexedDB (\texttt{idb-keyval})
+    \item PDF upload supported + PDF viewer (stored locally for reference)
+    \item “Develop a View” aggregates all document text and sends it for backend analysis
+\end{itemize}
+
+\vspace{0.4em}
+\textbf{Status:} \textbf{90\%}
+\end{frame}
+
+\begin{frame}{Input Module – Pending Work}
+\begin{itemize}
+    \item Improve UI/UX polish (navigation, empty states, guidance clarity)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Module Demonstration }
+\centering
+\IfFileExists{first.png}{
+\includegraphics[
+    width=0.85\textwidth,
+    height=0.65\textheight,
+    keepaspectratio
+]{first.png}
+
+\vspace{0.5em}
+\textbf{Description:} Workspace editor + guided templates.
+}{
+\fbox{\parbox{0.85\textwidth}{Screenshot placeholder: \texttt{Screenshots/SSP/workspace.png}}}
+}
+\end{frame}
+
+
+% ======================== WEB SEARCHER MODULE ========================
+\section{Web Searcher Module (Exa API)}
+
+\begin{frame}
+\centering
+\Huge \textbf{Web Searcher Module}
+\end{frame}
+
+\begin{frame}{Web Searcher Module – Planned Functionality}
+\begin{itemize}
+    \item Enrich startup context using up-to-date web sources
+    \item Fetch competitors, company facts, and market signals
+    \item Merge web findings into a structured enrichment dataset
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Web Searcher Module – Current Implementation}
+\begin{itemize}
+    \item Competitor enrichment implemented using \textbf{Exa Websets API}
+    \item The system generates a compact search sentence (LLM-based) for better retrieval
+    \item Outputs a \textbf{structured competitor list} including:
+    \begin{itemize}
+        \item Company name, website, description
+        \item Funding, revenue (if available), employee count
+        \item Founded year, target customer, headquarters
+    \end{itemize}
+    \item Social-signal collector implemented as a \textbf{CLI service} (Reddit + Hacker News + optional X), currently \textbf{not wired} into the main API
+\end{itemize}
+
+\vspace{0.4em}
+\textbf{Status:} \textbf{90\%}
+\end{frame}
+
+\begin{frame}{Web Searcher Module – Pending Work}
+\begin{itemize}
+    \item Add \textbf{source attribution} (URLs / evidence pointers) into enrichment output
+    \item Add caching + rate-limit handling for API stability
+    \item Integrate social-signal output into backend response (optional feature toggle)
+    \item Improve enrichment quality filtering (dedupe + conflict handling)
+\end{itemize}
+\end{frame}
+
+
+% ======================== AGENT MODULE ========================
+\section{Agent Module (LangGraph + OpenAI)}
+
+\begin{frame}
+\centering
+\Huge \textbf{Agent Module}
+\end{frame}
+
+\begin{frame}{Agent Module – Planned Functionality}
+\begin{itemize}
+    \item Run expert-style evaluations across multiple domains
+    \item Produce concise reasoning per domain (finance, product, tech, go-to-market, VC)
+    \item Keep outputs structured for report generation
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Agent Module – Current Implementation}
+\begin{itemize}
+    \item Multi-agent analysis implemented using \textbf{LangGraph} + \textbf{OpenAI Chat models}
+    \item Implemented agents:
+    \begin{itemize}
+        \item Financial Analyst
+        \item Venture Capitalist
+        \item CTO
+        \item Marketing Specialist
+        \item Product Analyst
+    \end{itemize}
+    \item Implemented RAG pipeline:
+    \begin{itemize}
+        \item Chunking via RecursiveCharacterTextSplitter
+        \item Retrieval via \textbf{Chroma} + OpenAI embeddings
+    \end{itemize}
+    \item Parallel execution implemented (async orchestration + aggregation)
+\end{itemize}
+
+\vspace{0.4em}
+\textbf{Status:} \textbf{90\%}
+\end{frame}
+
+\begin{frame}{Agent Module – Pending Work}
+\begin{itemize}
+    \item Prompt refinement for higher consistency and clearer outputs
+    \item Token optimization (shorter context + better chunk selection)
+    \item Optional: add missing agents (e.g., Sales) and unify output schema
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Module Demonstration }
+\centering
+\IfFileExists{loading.png}{
+\includegraphics[
+    width=0.85\textwidth,
+    height=0.65\textheight,
+    keepaspectratio
+]{loading.png}
+
+\vspace{0.5em}
+\textbf{Description:} Multi Agent answer loading.
+}{
+\fbox{\parbox{0.85\textwidth}{Screenshot placeholder: \texttt{Screenshots/SSP/workspace.png}}}
+}
+\end{frame}
+
+
+\begin{frame}{Module Demonstration }
+\centering
+\IfFileExists{result.png}{
+\includegraphics[
+    width=0.85\textwidth,
+    height=0.65\textheight,
+    keepaspectratio
+]{result.png}
+
+\vspace{0.5em}
+\textbf{Description:} Multi Agent Analysis.
+}{
+\fbox{\parbox{0.85\textwidth}{Screenshot placeholder: \texttt{Screenshots/SSP/workspace.png}}}
+}
+\end{frame}
+
+% ======================== REPORT GENERATION MODULE ========================
+\section{Report Generation Module (UI + PDF Export)}
+
+\begin{frame}
+\centering
+\Huge \textbf{Report Generation Module}
+\end{frame}
+
+\begin{frame}{Report Generation Module – Planned Functionality}
+\begin{itemize}
+    \item Present final evaluation in a readable, structured report
+    \item Provide exportable output (PDF) for sharing
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Report Generation Module – Current Implementation}
+\begin{itemize}
+    \item Implemented results page that renders backend outputs per section
+    \item Implemented PDF export in the frontend using \textbf{html2pdf.js}
+    \item PDF styling includes header/metadata + section formatting (markdown rendering supported)
+    \item Progress UI implemented for “view generation” (stage indicator + error handling)
+\end{itemize}
+
+\vspace{0.4em}
+\textbf{Status:} \textbf{90\%}
+\end{frame}
+
+\begin{frame}{Report Generation Module – Pending Work}
+\begin{itemize}
+    \item More polished PDF layout (tables for competitors, consistent spacing, page breaks)
+    \item Add higher-level summary blocks (highlights, risks, recommendations)
+    \item Optional: add computed scoring + rubric (not currently implemented)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Module Demonstration (Optional Screenshot)}
+\centering
+\IfFileExists{pdf.png}{
+\includegraphics[
+    width=0.85\textwidth,
+    height=0.65\textheight,
+    keepaspectratio
+]{pdf.png}
+
+\vspace{0.5em}
+\textbf{Description:} PDF export of analysis report.
+}{
+\fbox{\parbox{0.85\textwidth}{Screenshot placeholder: \texttt{Screenshots/SSP/pdf-export.png}}}
+}
+\end{frame}
+
+
+
+% ======================== CONCLUSION ========================
+% ======================== PROJECT SUMMARY ========================
+\section{Progress Summary}
+
+\begin{frame}{Conclusion \& Next Steps}
+\begin{itemize}
+    \item Project is on track with a \textbf{modular, incremental implementation} toward an MVP
+    \item Core modules are \textbf{implemented and working} end-to-end:
+    \begin{itemize}
+        \item Input workspace (\textbf{Next.js + React}): guided templates, rich-text editor, PDF upload/viewer, autosave
+        \item Web enrichment (\textbf{Exa API}): competitor discovery + structured competitor dataset
+        \item Multi-agent evaluation (\textbf{LangGraph + OpenAI}): domain agents with RAG-based context retrieval
+        \item Report output: results UI + \textbf{PDF export} implemented (html2pdf.js)
+    \end{itemize}
+    \item Current focus: \textbf{performance and quality optimization} (prompt tuning, token efficiency, enrichment reliability, UI/UX polish)
+    \item Next milestone: improved citations/source attribution + caching/rate limits + more polished, consistent PDF reports
+\end{itemize}
+\end{frame}
+
+
+
+% ======================== REFERENCES ========================
+
+\section{References}
+
+\begin{frame}
+\centering
+\Huge \textbf{References}
+\end{frame}
+
+\begin{frame}
+\frametitle{References}
+\footnotesize{
+
+[1] A. Vaswani, N. Shazeer, N. Parmar, et al., “Attention Is All You Need,” in \textit{Advances in Neural Information Processing Systems}, 2017. \\
+
+[2] M. Puvvadi, S. K. Arava, A. Santoria, et al., “Survey of Marketing Agents, Agent-Based Models, and Generative AI in Marketing,” \textit{arXiv preprint} arXiv:2401.01234, 2024. \\
+
+[3] S. Han, Q. Zhang, Y. Yao, W. Jin, and Z. Xu, “LLM Multi-Agent Systems: Challenges and Open Problems,” \textit{arXiv preprint} arXiv:2403.04567, 2024. \\
+
+[4] E. Gavrilenko, F. Khosmood, M. Rastad, et al., “Improving Startup Success with Text Analysis,” \textit{JP Morgan Chase Technical Report}, 2023. \\
+
+[5] A. Khan and M. V. Mäntylä, “Developing RAG-Based LLM Systems from PDFs,” \textit{Tampere University}, 2024. \\
+}
+\end{frame}
+
+\begin{frame}
+\frametitle{References}
+\footnotesize{
+[6] A. Yehudai, L. Eden, A. Li, et al., “Survey on Evaluation of LLM-Based Agents,” \textit{arXiv preprint} arXiv:2402.07890, 2024. \\
+
+[7] S. Xiong and Y. Ihlamur, “Founder-GPT: Self-Play to Evaluate the Founder–Idea Fit,” \textit{arXiv preprint} arXiv:2404.01111, 2024. \\
+
+[8] G. Zhang, L. Niu, et al., “MaAS – Multi-Agent Architecture Search via Agentic Supernet,” in \textit{Proceedings of ICML}, 2025. \\
+
+[9] P. Yin, J. Liu, et al., “Zero-Indexing: Decoupling Planning and Execution in LLMs,” Stanford, UC Berkeley, Microsoft Research, 2024. \\
+
+[10] K. Lee, J. Chen, et al., “Chain of Agents: Modular Composition for Complex Reasoning,” \textit{Stanford University}, 2024. \\
+
+[11] X. Wang, Y. Ihlamur, and F. Alican, “SSFF: Investigating LLM Predictive Capabilities for Startup Success,” \textit{arXiv preprint} arXiv:2405.02777, 2024. \\
+
+}
+\end{frame}
+
+% ======================== THANK YOU ========================
+\begin{frame}
+\centering
+\Huge \textbf{Thank You}
+\end{frame}
+
+\end{document}

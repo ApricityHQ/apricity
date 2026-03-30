@@ -1,0 +1,945 @@
+\documentclass{beamer}
+
+\usetheme{Madrid}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{pdfpages}
+
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, 
+
+% Custom font sizes for better readability
+\setbeamerfont{title}{size=\Large}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\normalsize}
+\setbeamerfont{date}{size=\small}
+\setbeamerfont{frametitle}{size=\Large}
+\setbeamertemplate{footline}{}
+
+\title{Startup Success Predictor using Multi Agent System}
+\author[Group 8]{
+\textbf{Group 8}\\[6pt]
+\begin{tabular}{ll}
+Darwin Thomas & 22CSB13 MDL22CS065 \\
+K V Varun Krishnan & 22CSB30 MDL22CS115 \\
+Manu S Panicker & 22CSB31 MDL22CS119 \\
+M Arjun Krishna & 22CSB32 MDL22CS122
+\end{tabular}
+}
+
+
+
+
+\institute{Model Engineering College}
+\date{4 August 2025}
+% Custom footer for all slides
+\setbeamertemplate{footline}{
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.8\paperwidth,ht=2.5ex,dp=1ex,left]{author in head/foot}%
+      \hspace*{1em}\insertshortauthor
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.2\paperwidth,ht=2.5ex,dp=1ex,right]{date in head/foot}%
+      \insertframenumber{} / \inserttotalframenumber\hspace*{1em}
+    \end{beamercolorbox}%
+  }%
+  \vskip0pt%
+}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Table of Contents (Part 1)}
+\tableofcontents[sections=1-10] % Adjust the range to show the first part
+\end{frame}
+
+% Second part of the Table of Contents
+\begin{frame}
+\frametitle{Table of Contents (Part 2)}
+\tableofcontents[sections=11-19] % Adjust the range to show the remaining sections
+\end{frame}
+\section{Introduction}
+
+\begin{frame}
+\centering
+\Huge \textbf{Introduction}
+\end{frame}
+
+\begin{frame}{Introduction}
+\begin{itemize}
+\item Apricity aims to assist founders and investors by providing fast, data-driven evaluation of startup viability
+\item Designed as an AI-powered software prototype that simulates expert-level startup assessment through autonomous agents
+\item Employs a multi-agent architecture where each agent represents a domain expert such as Finance, Technology, Marketing, Sales, and Product
+\item Integrates Large Language Models with Retrieval-Augmented Generation (RAG) to ensure informed, context-aware, and explainable predictions
+\item Generates structured insights including risk analysis, strengths, weaknesses, and improvement suggestions in real time
+\end{itemize}
+\end{frame}
+
+
+\section{Multi-Agent System (MAS)}
+
+\begin{frame}
+\centering
+\Huge \textbf{Multi-Agent System (MAS)}
+\end{frame}
+
+\begin{frame}{Multi-Agent System (MAS)}
+\begin{itemize}
+    \item A \textbf{multi-agent system (MAS)} is a collection of AI agents working together to solve complex problems.
+    \item Each agent specializes in a specific domain (e.g., market analysis, product evaluation, financial review).
+    \item Agents use \textbf{Retrieval-Augmented Generation (RAG)} to access up-to-date, domain-specific information.
+    \item The system is modular and \textbf{easily extendable}—new agents can be added or existing ones modified.
+  
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Multi-Agent System (MAS)}
+\begin{itemize}
+    \item \textbf{Financial Analyst}: Evaluates financial viability, forecasts, cost structures, and potential ROI.
+    \item \textbf{Venture Capitalist (VC)}: Assesses investment readiness, scalability, and risk factors.
+    \item \textbf{CTO (Technology Officer)}: Reviews technical feasibility, innovation, and scalability of the product.
+    \item \textbf{Marketing Specialist}: Analyzes target market, go-to-market strategy, and brand positioning.
+    \item \textbf{Sales Manager}: Focuses on sales funnel, customer acquisition strategy, and revenue generation.
+    \item \textbf{Product Analyst}: Examines product-market fit, user needs, feature set, and competitive differentiation.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Multi-Agent System (MAS)}
+\begin{itemize}
+    \item Enables \textbf{rapid, domain-specific analysis} without requiring multiple rounds of external consultation.
+    \item Provides \textbf{parallel evaluations} from multiple expert perspectives in real-time.
+    \item Delivers \textbf{consistent, unbiased insights} derived from the latest data using RAG techniques.
+    \item \textbf{Reduces cost and time} significantly compared to traditional manual assessments.
+    \item Empowers founders to make \textbf{data-driven decisions quickly}, improving agility and market responsiveness.
+\end{itemize}
+\end{frame}
+
+
+\section{Features}
+\begin{frame}
+\centering
+\Huge \textbf{Features}
+\end{frame}
+
+\begin{frame}{Key Features of the System}
+\begin{itemize}
+    \item \textbf{AI-Powered Evaluation:} Uses large language models to assess startup viability across multiple dimensions.
+    \item \textbf{Multi-Agent Architecture:} Independent agents simulate domain experts such as Financial Analyst, VC, CTO, Marketing, Sales, and Product specialists.
+    \item \textbf{Retrieval-Augmented Generation (RAG):} Grounds evaluations using up-to-date external knowledge sources for improved accuracy.
+    \item \textbf{Real-Time Feedback:} Generates comprehensive startup assessments within minutes.
+    \item \textbf{Modular and Scalable Design:} Agents can be added, removed, or customized for different industries and evaluation criteria.
+\end{itemize}
+\end{frame}
+
+\section{Purpose and Scope}
+
+\begin{frame}
+\centering
+\Huge \textbf{Purpose and Scope}
+\end{frame}
+
+\begin{frame}{Purpose and Scope}
+\begin{itemize}
+    \item Defines the design and implementation of an AI-driven system for predicting startup success
+    \item Captures both functional and non-functional requirements of the Startup Success Predictor software prototype
+    \item Simulates expert-driven startup evaluation using autonomous multi-agent reasoning
+    \item Focuses on software components including agent orchestration, retrieval pipeline, and evaluation logic
+    \item Provides structured, explainable assessments across finance, technology, market, sales, and product domains
+    \item Designed to be extensible for future integration with real-world datasets, investor tools, and decision-support platforms
+\end{itemize}
+\end{frame}
+
+
+
+
+
+\section{Literature Survey}
+
+\begin{frame}
+\centering
+\Huge \textbf{Literature Survey}
+\end{frame}
+
+
+\begin{frame}{SSFF: Investigating LLM Predictive Capabilities for Startup Succes}
+\large\textbf{Xisen Wang, Yigit Ihlamur, et al.}
+
+\normalsize
+\begin{itemize}
+  \item Introduces a multi-agent system combining LLMs, random forests, and neural networks.
+    \item Demonstrates that founders' professional backgrounds significantly influence startup success rates.
+
+    \item Framework includes: analyst agents, prediction block (LLM-enhanced RF model), and external market data via RAG.
+    \item Addresses LLM overprediction bias using structured prompting and ensemble reasoning.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Attention Is All You Need}
+\large\textbf{Ashish Vaswani et al. (Google Brain, 2017)}
+
+\normalsize
+\begin{itemize}
+  \item Introduced the Transformer model using only attention, removing RNNs and CNNs.
+    \item Employed multi-head self-attention and positional encoding.
+    \item Enabled fast, parallel training with lower computational cost.
+    \item Achieved state-of-the-art results in machine translation tasks.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Survey of Marketing Agents, Agent-Based Models, and Generative AI in Marketing    }
+\large\textbf{Meghana Puvvadi, et al.}
+
+\normalsize
+\begin{itemize}
+   \item ABMs and LLMs enable personalized, adaptive marketing beyond traditional models.
+    \item ABMs simulate real-world consumer and influencer interactions.
+    \item LLMs automate and personalize content across multiple channels.
+    \item Hybrid ABM-LLM frameworks support scalable, real-time marketing campaigns.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{LLM Multi-Agent Systems: Challenges and Open Problems }
+\large\textbf{Shanshan Han, et al.}
+
+\normalsize
+\begin{itemize}
+ \item Identifies four agent structures: Equi-Level, Hierarchical, Nested, and Dynamic.
+    \item Highlights the complexity of global planning and coordination among agents.
+    \item Emphasizes the need for both local and shared memory across agents.
+    \item Describes SSFF use case with shared JSON/vector memory and local agent memory.
+  \item Outperforms baselines on Mind2Web across tasks and domains.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Improving Startup Success with Text Analysis }
+\large\textbf{Emily Gavrilenko, et al.}
+
+\normalsize
+\begin{itemize}
+   \item Aims to predict startup funding outcomes using public and text-based data.
+    \item Textual features (e.g., sentiment, passive voice, POS patterns) boost accuracy—especially from Twitter data.
+    \item NLP on business descriptions and social media improves predictions.
+    \item Combines structured (numeric) and unstructured (text) data for stronger models.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Developing RAG-Based LLM Systems from PDFs: An Experience Report }
+\large\textbf{Ayman Asad Khan, et al.}
+
+\normalsize
+\begin{itemize}
+   \item Presents a hands-on guide for building Retrieval-Augmented Generation (RAG) systems using PDF documents as data sources.
+    \item Details the full pipeline: PDF collection, text preprocessing, vector embedding, retrieval, and LLM-based response generation.
+    \item Evaluates two approaches: OpenAI's Assistant API for simplicity and Llama for open-source flexibility.
+    \item Addresses practical challenges such as PDF layout issues, chunking strategies, metadata handling, and error management.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Survey on Evaluation of LLM-Based Agents  }
+\large\textbf{Asaf Yehudai, Lilach Eden, et al.}
+
+\normalsize
+\begin{itemize}
+  \item First comprehensive survey on evaluation methods for LLM-based agents.
+  \item Reviews benchmarks across core skills, applications, general agents, and frameworks.
+  \item Identifies gaps in cost-efficiency, robustness, and safety evaluation.
+  \item Mentions emerging tools like LangSmith and Galileo for stepwise evaluation.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Founder-GPT: Self-Play to Evaluate the Founder–Idea Fit}
+\large\textbf{Sichao Xiong, Yigit Ihlamur}
+
+\normalsize
+\begin{itemize}
+ \item Introduces a self-play multi-agent framework with Tree-of-Thought prompting for VC-style founder-idea evaluation.
+    \item Simulates analyst debates refined by a critic model to derive explainable component scores.
+    \item Combines embeddings of LinkedIn bios and idea text with structured academic features for similarity retrieval.
+    \item Uses a composite scoring pipeline with an ethical gate—unethical ventures are automatically rejected.
+\end{itemize}
+\end{frame}
+
+
+
+
+
+
+
+\begin{frame}{MaAS – Multi-agent Architecture Search via Agentic Supernet }
+\large\textbf{Guibin Zhang, Luyang Niu et al.}
+
+\normalsize
+\begin{itemize}
+  \item Proposes a probabilistic supernet that samples query-specific agent workflows, replacing static pipelines.
+    \item Controller dynamically selects reasoning operators (e.g., I/O, CoT, Debate, ReAct) and can early-exit for simpler tasks.
+    \item Achieves up to 16.9 percentage point accuracy gain and reduces inference costs by 55–94\%.
+    \item Enables cost-aware, auto-designed multi-agent workflows with cross-model and cross-dataset generalization.
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Zero-Indexing Internet Search Augmented Generation for Large
+Language Models}
+\large\textbf{Guangxin He, et al.}
+
+\normalsize
+\begin{itemize}
+  \item Introduces zero-indexing with dynamic search APIs instead of static corpora.
+  \item Uses collaborative LLMs for search, ranking, and information extraction.
+  \item Cuts token cost by up to 47 percent while improving output quality.
+  \item Deployed in 01.AI’s real-time inference system.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Chain of Agents: A Modular Framework for Solving Complex Tasks with LLMs}
+\large\textbf{Brian Lee, Zifan Wang, et al.}
+
+\normalsize
+\begin{itemize}
+   \item Proposes a modular framework where agents are composed in a chain to solve complex tasks with long-term planning.
+    \item Agents operate independently, communicate via function calls, and can invoke tools or sub-agents.
+    \item Demonstrates improved task performance across domains like math, coding, and decision-making.
+    \item Enables interpretability and reusability by structuring agent workflows with clear modular interfaces..
+\end{itemize}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}{Literature Survey (1/2)}
+\resizebox{\textwidth}{!}{%
+\tiny
+\begin{tabular}{|p{1.5cm}|p{1.3cm}|p{2.8cm}|p{2cm}|p{2cm}|p{2.2cm}|}
+\hline
+\textbf{Title} & \textbf{Authors} & \textbf{Key Findings} & \textbf{Advantages} & \textbf{Disadvantages} & \textbf{Inferences} \\
+\hline
+
+SSFF & Wang et al. (Oxford, Vela Partners) & Multi-agent system combining LLMs, random forests, neural networks for startup prediction. & Addresses LLM overprediction bias, incorporates founder background analysis. & Complexity of ensemble approach, potential overfitting to specific datasets. & Founder professional backgrounds significantly influence startup success rates \\
+
+\hline
+Attention Is All You Need & Vaswani et al. (Google Brain, 2017) & Introduced Transformer using only attention, removing RNNs/CNNs. Multi-head self-attention and positional encoding. & Fast parallel training, lower computational cost, state-of-the-art translation results, generalizes well to sequence tasks. & Not explicitly mentioned in source. & Pure attention mechanisms can replace recurrence and convolution for sequence modeling tasks. \\
+\hline
+Survey of Marketing Agents & Puvvadi et al. & ABMs and LLMs enable personalized, adaptive marketing. Hybrid ABM-LLM frameworks support real-time campaigns. & Personalized content across channels, real-world consumer simulation, scalable campaigns. & Privacy concerns, algorithmic bias, lack of transparency, sustainability issues. & AI-driven marketing requires balancing personalization with ethical considerations. \\
+\hline
+LLM Multi-Agent Systems & Han et al. & Four agent structures: Equi-Level, Hierarchical, Nested, Dynamic. Emphasis on global planning and coordination. & Local and shared memory systems, decentralized reasoning through agent debates. & Complex coordination challenges, global planning difficulties. & Multi-agent architectures need sophisticated memory and coordination mechanisms. \\
+\hline
+Improving Startup Success & Gavrilenko et al. (JP Morgan Chase) & Textual features from Twitter and business descriptions boost funding prediction accuracy. & Combines structured and unstructured data, NLP enhances predictions. & Limited to specific data sources, accuracy depends on text quality. & Text analysis provides valuable signals for startup investment decisions. \\
+\hline
+
+
+Survey on LLM Agents & Yehudai et al. (Hebrew Univ., IBM, Yale) & First comprehensive survey of LLM agent evaluation methods across four dimensions. & Systematic evaluation framework, identifies research gaps, emerging evaluation tools. & Gaps in cost-efficiency and robustness evaluation, scalability challenges. & Standardized evaluation methods needed for LLM agent development. \\
+\hline
+
+\end{tabular}}
+\end{frame}
+
+\begin{frame}{Literature Survey (2/2)}
+\resizebox{\textwidth}{!}{%
+\tiny
+\begin{tabular}{|p{1.5cm}|p{1.3cm}|p{2.8cm}|p{2cm}|p{2cm}|p{2.2cm}|}
+\hline
+\textbf{Title} & \textbf{Authors} & \textbf{Key Findings} & \textbf{Advantages} & \textbf{Disadvantages} & \textbf{Inferences} \\
+
+
+
+
+\hline
+Founder-GPT & Xiong, Ihlamur (Oxford, Vela Partners) & Self-play multi-agent framework with Tree-of-Thought for founder-idea evaluation. & Explainable scoring, ethical gate, interpretable evaluation using only LinkedIn and idea input. & Limited to specific input types, depends on LinkedIn data quality. & Multi-agent self-play enables sophisticated founder-idea fit assessment. \\
+\hline
+MaAS & Zhang et al. (ICML 2025) & Probabilistic supernet samples query-specific agent workflows dynamically. & 16.9pp accuracy gain, 55-94\% cost reduction, cross-model generalization. & Complex architecture, requires training supernet controller. & Dynamic workflow selection optimizes both performance and efficiency. \\
+
+\hline
+Zero-Indexing Internet Search & He et al. (HKUST, Fudan, 01.AI, Tsinghua) & Uses zero-indexing paradigm leveraging real-time web search APIs with collaborative LLMs for query parsing, re-ranking, and content extraction. & Achieves higher quality content, reduces input tokens by 21–47\%, and is production-deployed for real-time up-to-date generation. & Dependent on external search APIs; real-time search latency and noise in web data pose challenges. & Enables dynamic, fresh online knowledge integration without maintaining static indexes, improving retrieval relevance and efficiency. \\
+
+\hline
+
+
+Chain of Agents & Lee et al. (Stanford University) & Modular framework where agents are composed in chains to solve complex, multi-step tasks. & Improves task performance in math, coding, and planning; promotes modularity and interpretability. & Requires careful design of agent interfaces; potential communication overhead. & Modular agent chaining enables scalable and reusable LLM-driven systems for complex reasoning. \\
+
+
+
+\hline
+Developing RAG-Based LLM Systems from PDFs & Khan et al. (Tampere University) & Step-by-step guide to building RAG systems using PDFs; compares OpenAI API and Llama approaches. & Real-time retrieval, transparent responses, supports both proprietary and open-source tools. & Complex PDF layouts pose extraction challenges; OpenAI vector store raises privacy concerns. & RAG improves factual accuracy and usability in knowledge-intensive domains. \\
+\hline
+\end{tabular}}
+\end{frame}
+
+%------------------------------------------------
+%------------------------------------------------
+\section{Problem Statement}
+
+\begin{frame}
+\centering
+\Huge \textbf{Problem Statement}
+\end{frame}
+
+\begin{frame}{Problem Statement}
+\begin{itemize}
+    \item Startup evaluation today relies heavily on manual expert reviews.
+    \item These processes are slow, expensive, and difficult to scale.
+    \item Early-stage founders often lack access to structured, expert-level feedback.
+\end{itemize}
+\end{frame}
+
+\section{Proposed Solution}
+
+\begin{frame}
+\centering
+\Huge \textbf{Proposed Solution}
+\end{frame}
+
+\begin{frame}{Proposed Solution}
+\begin{itemize}
+    \item An AI-driven multi-agent system that simulates expert startup evaluation.
+    \item Each agent represents a domain expert (finance, product, market, etc.).
+    \item Produces structured insights instead of a single opaque prediction.
+\end{itemize}
+\end{frame}
+
+\section{Project Progress Overview}
+
+\begin{frame}
+\centering
+\Huge \textbf{Project Progress Overview}
+\end{frame}
+
+\begin{frame}{Project Progress Overview (Current)}
+\begin{itemize}
+    \item Overall Status: \textbf{$\sim$90\%} core MVP pipeline implemented
+    \item Frontend: Guided startup workspace (templates + rich-text editor), autosave, PDF upload + viewer
+    \item Backend: FastAPI endpoint runs \textbf{multi-agent analysis} with RAG chunking + retrieval
+    \item Web enrichment: \textbf{Exa API} competitor discovery implemented (structured competitor list)
+    \item Report: Results rendered in UI + \textbf{PDF export implemented} via \textbf{html2pdf.js}
+\end{itemize}
+\end{frame}
+
+\section{System Flow}
+
+\begin{frame}
+\centering
+\Huge \textbf{System Flow Diagram}
+\end{frame}
+
+\begin{frame}{End-to-End System Flow}
+\centering
+\IfFileExists{Block.png}{
+\includegraphics[
+    width=0.9\textwidth,
+    height=0.75\textheight,
+    keepaspectratio
+]{Block.png}
+
+\vspace{0.5em}
+\small Flow diagram showing end-to-end data movement across system modules.
+}{
+\fbox{\parbox{0.85\textwidth}{Flow diagram placeholder: \texttt{Block.png}}}
+}
+\end{frame}
+
+\begin{frame}{System Flow Explanation (1/2)}
+\small
+\begin{enumerate}
+    \item \textbf{User Input -> Workspace (Frontend):}
+    User fills guided startup sections using artifact templates (rich-text editor) and can upload a PDF for reference.
+
+    \item \textbf{Workspace -> Local Persistence:}
+    Documents, files, and view state are autosaved to \textbf{IndexedDB} (debounced) for reliability across refreshes.
+
+    \item \textbf{Workspace -> "Develop a View":}
+    Frontend aggregates all document content into a single analysis prompt and creates a new \texttt{viewId} with \texttt{pending} status.
+
+    \item \textbf{View Page -> Analysis Request:}
+    UI shows progress stages and sends the aggregated prompt to the internal API endpoint \texttt{/api/views}.
+
+    \item \textbf{API Route -> Backend Forwarding Setup:}
+    Next.js API validates the request and forwards it to the Python backend endpoint \texttt{/view}.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{System Flow Explanation (2/2)}
+\small
+\setcounter{enumi}{5}
+\begin{enumerate}
+    \item \textbf{Next.js API -> FastAPI Backend:}
+    The prompt is posted to \texttt{POST /view} for analysis.
+
+    \item \textbf{Backend -> RAG Context Preparation:}
+    Input is chunked, embedded (OpenAI embeddings), and indexed in \textbf{Chroma} to enable retrieval during agent reasoning.
+
+    \item \textbf{Backend -> Multi-Agent Evaluation:}
+    \textbf{LangGraph} runs domain agents (Finance, VC, CTO, Marketing, Product) in parallel using the shared retriever.
+
+    \item \textbf{Backend -> Web Enrichment (Competitors):}
+    \textbf{Exa API} is used to discover and enrich top competitors into a structured competitor dataset (disabled if \texttt{EXA\_API\_KEY} is missing).
+
+    \item \textbf{Backend -> Structured JSON Response:}
+    Backend returns agent analyses, competitor search status, and competitor list as JSON.
+
+    \item \textbf{Frontend -> Results Rendering \& Storage:}
+    The view is marked \texttt{completed} (or \texttt{error}), results are rendered section-wise, and stored in the workspace state for later access.
+
+    \item \textbf{Frontend -> Report Export:}
+    User exports a styled A4 PDF report using \textbf{html2pdf.js} (markdown rendering supported for agent outputs).
+\end{enumerate}
+\end{frame}
+
+%------------------------------------------------
+\section{Novelty of the Project}
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Novelty of Project}
+    \textbf{Novelty}
+    \begin{itemize}
+
+\item Uses a multi agent system where each agent focuses on a different aspect of the startup, combining their insights into one coherent analysis.
+\item Connects to live external data sources to include current market and industry information in every evaluation.
+\item Replaces traditional numeric scoring with qualitative, human readable predictions that explain reasoning clearly and build trust in the decision process.
+\item Emphasizes transparent, language based reasoning instead of complex numeric scores for better interpretability.
+\item Adopts a modular design that can evolve by adding new agents or data inputs as startup evaluation methods advance.
+    \end{itemize}
+\end{frame}
+%------------------------------------------------
+\section{Objectives}
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Project Objectives}
+    \textbf{Objectives}
+    \begin{itemize}
+        \item Develop an intelligent multi-agent system to evaluate startup ideas comprehensively
+        \item Enable automated analysis across financial, technical, marketing, and product domains
+        \item Provide data-driven success predictions with actionable recommendations
+        \item Reduce evaluation time and costs compared to traditional expert consultations
+        \item Deliver a user-friendly web interface for startup founders and investors to assess business viability
+    \end{itemize}
+\end{frame}
+
+%------------------------------------------------
+\section{Software Requirements Specification}
+\begin{frame}
+\begin{center}
+    \huge \textbf{Software Requirements Specification}
+\end{center}
+\end{frame}
+%------------------------------------------------
+
+
+
+
+% Product Overview
+\begin{frame}{Product Overview}
+    \textbf{Purpose:} To provide a functional description of a system that evaluates startup ideas using AI agents.\\[6pt]
+    \textbf{Scope:}
+    \begin{itemize}
+        \item Analyzes user-submitted startup ideas across financial, technical, and marketing domains.
+        \item Predicts the potential for startup success.
+        \item Generates detailed reports with insights and recommendations.
+    \end{itemize}
+\end{frame}
+
+% Multi-Agent System
+\begin{frame}{Multi-Agent System (MAS)}
+    The system consists of multiple specialized AI agents working collaboratively:
+    \begin{itemize}
+        \item \textbf{Financial Analyst:} Evaluates financial viability and ROI.
+        \item \textbf{CTO:} Reviews technical feasibility and innovation.
+        \item \textbf{Marketing Specialist:} Analyzes target market and branding.
+        \item \textbf{Product Analyst:} Assesses market fit and competitive edge.
+    \end{itemize}
+    These agents combine their analyses to produce a unified prediction report.
+\end{frame}
+
+% Overall Description
+\begin{frame}{Overall Description}
+    \textbf{Product Perspective:}
+    \begin{itemize}
+        \item Replaces traditional expert consultations with a fast, automated system.
+        \item Uses a \textbf{multi-agent AI architecture} for domain-specific evaluation.
+    \end{itemize}
+    \vspace{6pt}
+    \textbf{Product Functions:}
+    \begin{itemize}
+        \item Data ingestion and augmentation using RAG.
+        \item Parallel analysis by expert agents.
+        \item Consolidated report generation.
+    \end{itemize}
+\end{frame}
+
+% User Classes
+\begin{frame}{User Classes and Characteristics}
+    \begin{itemize}
+        \item \textbf{Startup Founders:} Validate ideas before funding.
+        \item \textbf{Product Managers:} Assess market fit and risks.
+        \item \textbf{Developers:} Test technical feasibility.
+        \item \textbf{Investors:} Evaluate early-stage ideas for potential success.
+    \end{itemize}
+\end{frame}
+
+% Operating Environment
+\begin{frame}{Operating Environment}
+    \begin{itemize}
+        \item Web-based application accessible via browsers (Chrome, Firefox, Safari).
+        \item Backend built with \textbf{Python + LangChain}.
+        \item Frontend built with \textbf{React}.
+        \item Requires API connectivity with external LLM services.
+    \end{itemize}
+\end{frame}
+
+\subsection{External Interface Requirements}
+% External Interface Requirements
+\begin{frame}{External Interface Requirements}
+    \textbf{User Interfaces:}
+    \begin{itemize}
+        \item Intuitive web UI for data input and report visualization.
+    \end{itemize}
+    \vspace{4pt}
+    \textbf{Hardware Interfaces:}
+    \begin{itemize}
+        \item Standard PC or mobile device with web browser.
+    \end{itemize}
+    \vspace{4pt}
+    \textbf{Software Interfaces:}
+    \begin{itemize}
+        \item Python backend with LLM APIs.
+        \item Database for storing reports and metadata.
+    \end{itemize}
+    \vspace{4pt}
+    \textbf{Communication:} Secure HTTPS protocol.
+\end{frame}
+
+% Hardware and Software Requirements
+\subsection{Hardware and Software Requirements}
+\begin{frame}{Hardware and Software Requirements}
+    \textbf{Hardware:}
+    \begin{itemize}
+        \item Server with 8GB+ RAM and dual-core CPU.
+        \item Client: Any modern computer or smartphone.
+    \end{itemize}
+    \vspace{6pt}
+    \textbf{Software:}
+    \begin{itemize}
+        \item Python 3.8+ for backend.
+        \item React for frontend.
+        \item Database for user data.
+        \item LLM API key for agent reasoning.
+    \end{itemize}
+\end{frame}
+
+\subsection{Functional Requirements}
+\begin{frame}{Functional Requirements}
+    \begin{enumerate}
+        \item \textbf{User Input \& Data Handling:} Collects startup details and fetches additional context via RAG.
+        \item \textbf{Multi-Agent Analysis:} Domain-specific agents evaluate the idea collaboratively.
+        \item \textbf{Report Generation:} Produces detailed success prediction and recommendations.
+        \item \textbf{User Interaction:} Provides progress updates and notifications.
+        \item \textbf{Security \& Privacy:} Encrypts data and ensures confidentiality.
+    \end{enumerate}
+\end{frame}
+
+\subsection{Nonfunctional Requirements}
+\begin{frame}{Nonfunctional Requirements}
+    \textbf{Performance:} Fast and accurate analysis delivery.\\[6pt]
+    \textbf{Safety:} Prevents misinformation by validating sources.\\[6pt]
+    \textbf{Security:} All data encrypted; no permanent storage of confidential info.\\[6pt]
+    \textbf{Quality Attributes:}
+    \begin{itemize}
+        \item Modularity for agent addition/removal.
+        \item Reliability and transparency in predictions.
+    \end{itemize}
+\end{frame}
+
+\section{Software Design Document}
+%------------------------------------------------
+\begin{frame}
+\begin{center}
+    \huge \textbf{Software Design Document}
+\end{center}
+\end{frame}
+
+
+
+%------------------------------------------------
+\subsection{Frontend}
+\begin{frame}{Frontend}
+    The frontend serves as the user interface, enabling data input and interaction with the system.\\[8pt]
+    \textbf{Key Functions:}
+    \begin{itemize}
+        \item \textbf{Input Form:} Collects essential business data — idea, founders, market, strategy, sales, and finance.
+        \item \textbf{Evaluation Trigger:} Initiates the multi-agent analysis and tracks progress in real time.
+        \item \textbf{Result Dashboard:} Displays consolidated agent results and overall evaluation insights.
+        \item \textbf{Report Generation:} Summarizes agent perspectives, risks, suggestions, and evaluation scores.
+        \item \textbf{User Interaction:} Provides a smooth and intuitive interface for easy data submission and feedback.
+    \end{itemize}
+\end{frame}
+%------------------------------------------------
+
+%------------------------------------------------
+\subsection{Backend}
+\begin{frame}{Backend}
+    The backend powers the analytical intelligence and data processing components of the system.\\[8pt]
+    \textbf{Core Components:}
+    \begin{itemize}
+        \item \textbf{API Orchestration:} Manages communication between frontend, agents, and storage.
+        \item \textbf{Knowledge Retrieval:} Gathers and summarizes relevant market and product data from the web.
+        \item \textbf{Vector Repository:} Stores semantic embeddings for context-aware retrieval and matching.
+        \item \textbf{Multi-Agent Coordination:} Synchronizes agents handling market, product, and founder evaluations.
+        \item \textbf{Prediction Engine:} Generates interpretable scores and insights from structured and unstructured data.
+        \item \textbf{Data Management:} Handles persistent storage, versioning, and retrieval for reproducible analyses.
+    \end{itemize}
+\end{frame}
+
+%------------------------------------------------
+\subsection{Input Data}
+\begin{frame}{Input Data}
+    \begin{itemize}
+        \item \textbf{Business Idea} – Core concept or innovation behind the project.
+        \item \textbf{Founder Information} – Details about the team, expertise, and roles.
+        \item \textbf{Market Study} – Research data, trends, and competitor analysis.
+        \item \textbf{Marketing Strategy} – Target audience, positioning, and promotion plans.
+        \item \textbf{Sales Information} – Sales approach, channels, and customer acquisition plan.
+        \item \textbf{Financial Information} – Funding, expenses, and projected revenue details.
+    \end{itemize}
+\end{frame}
+%------------------------------------------------
+%------------------------------------------------
+
+%------------------------------------------------
+\subsection{Use Case Diagram}
+%------------------------------------------------
+\begin{frame}
+\frametitle{Use Case Diagram}
+\centering
+\includegraphics[width=0.75\linewidth]{usecase2.drawio.png} % replace with actual file
+\end{frame}
+
+
+
+
+\section{Data Flow Diagram}
+%------------------------------------------------
+\begin{frame}
+\begin{center}
+    \huge \textbf{Data Flow Diagram}
+\end{center}
+\end{frame}
+%------------------------------------------------
+\subsection{Level 0}
+%------------------------------------------------
+\begin{frame}
+\frametitle{Data Flow Diagram}
+\textbf{LEVEL 0:}
+\begin{figure}
+    \includegraphics[width=\linewidth]{Level0.png}
+    \caption{Level 0 Data Flow Diagram}
+\end{figure}
+\end{frame}
+
+
+%------------------------------------------------
+\subsection{Level 1}
+%------------------------------------------------
+\begin{frame}
+\frametitle{Data Flow Diagram}
+\textbf{LEVEL 1:}
+\begin{figure}
+    \includegraphics[width=1\linewidth]{dfd1.jpeg}
+    \caption{Level 1 Data Flow Diagram}
+\end{figure}
+\end{frame}
+
+%------------------------------------------------
+\subsection{Level 2}
+%------------------------------------------------
+\begin{frame}
+\frametitle{Data Flow Diagram}
+\textbf{LEVEL 1.1:}
+\begin{figure}
+    \includegraphics[width=1\linewidth]{dfdPics/Untitled Diagram.drawio(6).png}
+    \caption{Level 1.1 Data Flow Diagram}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Data Flow Diagram}
+\textbf{LEVEL 1.2:}
+\begin{figure}
+    \includegraphics[width=0.85\linewidth]{dfd1_2.png}
+    \caption{Level 1.2 Data Flow Diagram}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Data Flow Diagram}
+\textbf{LEVEL 1.3:}
+\vspace{10}
+
+\begin{figure}
+    \includegraphics[width=1\linewidth]{level1_3.jpeg}
+    \caption{Level 1.3 Data Flow Diagram}
+\end{figure}
+\end{frame}
+
+
+
+
+
+%<-- Darwin was here 
+
+
+
+
+\section{System Architecture}
+%------------------------------------------------
+\begin{frame}
+\begin{center}
+    \huge \textbf{System Architecture}
+\end{center}
+\end{frame}
+%------------------------------------------------
+\begin{frame}
+\frametitle{System Architecture}
+\textbf{Block Diagram}
+\begin{figure}
+    \includegraphics[width=0.5\linewidth]{flowchart final (1).png}
+    \caption{Block Diagram}
+\end{figure}
+\end{frame}
+
+
+%------------------------------------------------
+\section{Module Description}
+%------------------------------------------------
+
+\begin{frame}{Input Module}
+\small
+\begin{itemize}
+    \item \textbf{Purpose / Functions:} Create and edit startup artifacts, upload PDFs, autosave workspace state, build analysis payload.
+    \item \textbf{Input / Output:} Artifact text + PDFs -> saved workspace + consolidated startup context.
+    \item \textbf{Libraries:} React / Next.js, TipTap, idb-keyval.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Web Searcher Module}
+\small
+\begin{itemize}
+    \item \textbf{Purpose / Functions:} Generate search sentence, fetch competitor data, normalize response.
+    \item \textbf{Input / Output:} Startup idea text -> competitor list + search status.
+    \item \textbf{Libraries:} httpx, ChatOpenAI, ChatPromptTemplate, StrOutputParser.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Agent Module}
+\small
+\begin{itemize}
+    \item \textbf{Purpose / Functions:} Chunk context, build retriever, run 5 agents, aggregate final result.
+    \item \textbf{Input / Output:} Combined startup context -> agent analyses + overall evaluation.
+    \item \textbf{Libraries:} langgraph, ChatOpenAI, OpenAIEmbeddings, Chroma, RecursiveCharacterTextSplitter.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Report Generation Module}
+\small
+\begin{itemize}
+    \item \textbf{Purpose / Functions:} Render results in UI and export final PDF.
+    \item \textbf{Input / Output:} Analysis JSON -> report view + PDF export.
+    \item \textbf{Libraries:} React / Next.js, html2pdf.js, react-markdown.
+\end{itemize}
+\end{frame}
+
+\section{Progress Summary}
+
+\begin{frame}{Conclusion \& Next Steps}
+\begin{itemize}
+    \item Project is on track with a \textbf{modular, incremental implementation} toward an MVP
+    \item Core modules are \textbf{implemented and working} end-to-end:
+    \begin{itemize}
+        \item Input workspace (\textbf{Next.js + React}): guided templates, rich-text editor, PDF upload/viewer, autosave
+        \item Web enrichment (\textbf{Exa API}): competitor discovery + structured competitor dataset
+        \item Multi-agent evaluation (\textbf{LangGraph + OpenAI}): domain agents with RAG-based context retrieval
+        \item Report output: results UI + \textbf{PDF export} implemented (html2pdf.js)
+    \end{itemize}
+    \item Current focus: \textbf{performance and quality optimization} (prompt tuning, token efficiency, enrichment reliability, UI/UX polish)
+    \item Next milestone: improved citations/source attribution + caching/rate limits + more polished, consistent PDF reports
+\end{itemize}
+\end{frame}
+
+\section{Conclusion}
+
+
+\begin{frame}
+\frametitle{Conclusion}
+\begin{itemize}
+   \item The uncertainty of startup evaluation is transformed into clarity and direction.
+\item Guesswork and scattered opinions give way to structured understanding and insight.
+\item The platform guides founders to view their ideas through the power of experience and data.
+\item  It shapes the future with confidence and precision instead of mere prediction.
+\item  The vision of giving every founder expert level understanding becomes a reality.
+
+
+\end{itemize}
+\end{frame}
+
+\section{References}
+
+\begin{frame}
+\frametitle{References}
+\footnotesize{
+
+[1] A. Vaswani, N. Shazeer, N. Parmar, et al., “Attention Is All You Need,” in \textit{Advances in Neural Information Processing Systems}, 2017. \\
+
+[2] M. Puvvadi, S. K. Arava, A. Santoria, et al., “Survey of Marketing Agents, Agent-Based Models, and Generative AI in Marketing,” \textit{arXiv preprint} arXiv:2401.01234, 2024. \\
+
+[3] S. Han, Q. Zhang, Y. Yao, W. Jin, and Z. Xu, “LLM Multi-Agent Systems: Challenges and Open Problems,” \textit{arXiv preprint} arXiv:2403.04567, 2024. \\
+
+[4] E. Gavrilenko, F. Khosmood, M. Rastad, et al., “Improving Startup Success with Text Analysis,” \textit{JP Morgan Chase Technical Report}, 2023. \\
+
+[5] A. Khan and M. V. Mäntylä, “Developing RAG-Based LLM Systems from PDFs,” \textit{Tampere University}, 2024. \\
+}
+\end{frame}
+
+\begin{frame}
+\frametitle{References}
+\footnotesize{
+[6] A. Yehudai, L. Eden, A. Li, et al., “Survey on Evaluation of LLM-Based Agents,” \textit{arXiv preprint} arXiv:2402.07890, 2024. \\
+
+[7] S. Xiong and Y. Ihlamur, “Founder-GPT: Self-Play to Evaluate the Founder–Idea Fit,” \textit{arXiv preprint} arXiv:2404.01111, 2024. \\
+
+[8] G. Zhang, L. Niu, et al., “MaAS – Multi-Agent Architecture Search via Agentic Supernet,” in \textit{Proceedings of ICML}, 2025. \\
+
+[9] P. Yin, J. Liu, et al., “Zero-Indexing: Decoupling Planning and Execution in LLMs,” Stanford, UC Berkeley, Microsoft Research, 2024. \\
+
+[10] K. Lee, J. Chen, et al., “Chain of Agents: Modular Composition for Complex Reasoning,” \textit{Stanford University}, 2024. \\
+
+[11] X. Wang, Y. Ihlamur, and F. Alican, “SSFF: Investigating LLM Predictive Capabilities for Startup Success,” \textit{arXiv preprint} arXiv:2405.02777, 2024. \\
+
+}
+\end{frame}
+
+
+
+\begin{frame}
+\centering
+\Huge \textbf{Thank You}
+\end{frame}
+\end{document}
