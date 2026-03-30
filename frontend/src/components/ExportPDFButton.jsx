@@ -2,7 +2,6 @@
 
 import { useRef, useState } from 'react'
 import * as Icons from 'lucide-react'
-import html2pdf from 'html2pdf.js'
 import ReactMarkdown from 'react-markdown'
 
 export default function ExportPDFButton({ data, viewId, startupName = 'Startup Analysis' }) {
@@ -30,6 +29,7 @@ export default function ExportPDFButton({ data, viewId, startupName = 'Startup A
     }
 
     try {
+      const { default: html2pdf } = await import('html2pdf.js')
       await html2pdf().set(opt).from(element).save()
     } catch (error) {
       console.error('PDF export failed:', error)

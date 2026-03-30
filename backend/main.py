@@ -1,27 +1,39 @@
 import asyncio
+import logging
 import os
+import traceback
 from contextlib import asynccontextmanager
-from dotenv import load_dotenv
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Depends
 from typing import Any, Dict
+
+# ---- Load env FIRST — before any module that reads os.getenv at import time ----
+from dotenv import load_dotenv
+load_dotenv()
+
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Depends
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 import aiosqlite
 
 from company_search import CompanySearchService
-# from social_signals import SocialSignalsService
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-
+from langchain_core.runnables import RunnableLambda
 from langgraph.graph import StateGraph, END
 
 from pdf_ingest import extract_pdf_text
 from text_chunking import chunk_text
-
-from pydantic import BaseModel
-from fastapi.responses import StreamingResponse
 from db import init_db, get_db, save_report, get_user_reports, get_report_by_id, save_message, get_report_messages
 from auth import get_current_user_id
+
+# ---- Logging Setup ----
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    datefmt="%H:%M:%S",
+)
+logger = logging.getLogger("ssp.main")
 
 class Message(BaseModel):
     role: str
@@ -29,11 +41,6 @@ class Message(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: list[Message]
-
-# -------------------------------------------------------------------
-# Setup
-# -------------------------------------------------------------------
-load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -70,8 +77,7 @@ def build_retriever(content: str):
     return vector_store.as_retriever(), len(chunks)
 
 
-def format_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs)
+format_docs = RunnableLambda(lambda docs: "\n\n".join(doc.page_content for doc in docs))
 
 
 # -------------------------------------------------------------------
@@ -251,6 +257,7 @@ async def view_analysis(
     user_id: str | None = Depends(get_current_user_id),
     db: aiosqlite.Connection = Depends(get_db)
 ):
+    logger.info("POST /view | user_id=%s | prompt_len=%d", user_id, len(prompt))
     if not prompt.strip():
         raise HTTPException(status_code=400, detail="Prompt cannot be empty")
 
@@ -261,6 +268,7 @@ async def view_analysis(
                 file_bytes = await upload.read()
                 extracted_texts.append(extract_pdf_text(file_bytes))
             except Exception as exc:
+                logger.exception("PDF extraction failed for %s", upload.filename)
                 raise HTTPException(
                     status_code=400,
                     detail=f"PDF extraction failed for {upload.filename}: {exc}"
@@ -268,29 +276,41 @@ async def view_analysis(
 
     combined_text = "\n\n".join([text for text in [prompt, *extracted_texts] if text])
 
-    retriever, chunk_count = build_retriever(combined_text)
+    try:
+        retriever, chunk_count = build_retriever(combined_text)
+        logger.info("Retriever built: %d chunks", chunk_count)
+    except Exception as exc:
+        logger.exception("build_retriever failed")
+        raise HTTPException(status_code=500, detail=f"Failed to build retriever: {exc}")
 
-    analysis_task = app_graph.ainvoke({
-        "retriever": retriever
-    })
+    analysis_task = app_graph.ainvoke({"retriever": retriever})
     competitors_task = company_search_service.find_top_competitors_for_idea(prompt)
-    # social_signals_task = social_signals_service.summarize_customer_voice_signals(request.prompt)
 
+    logger.info("Awaiting analysis_task and competitors_task in parallel...")
     (
-        analysis_result, 
-        competitors_result, 
-        # social_signals_result
+        analysis_result,
+        competitors_result,
     ) = await asyncio.gather(
         analysis_task,
         competitors_task,
-        # social_signals_task,
         return_exceptions=True
     )
 
     if isinstance(analysis_result, Exception):
+        logger.error(
+            "LangGraph analysis failed:\n%s",
+            "".join(traceback.format_exception(type(analysis_result), analysis_result, analysis_result.__traceback__))
+        )
         raise HTTPException(status_code=500, detail=f"Analysis failed: {analysis_result}")
 
-    print ("chunk count: ", chunk_count)
+    if isinstance(competitors_result, Exception):
+        logger.warning(
+            "Competitor search failed (non-fatal):\n%s",
+            "".join(traceback.format_exception(type(competitors_result), competitors_result, competitors_result.__traceback__))
+        )
+
+    logger.info("Analysis complete. Agent result keys: %s", list(analysis_result.keys()))
+
     response: Dict[str, Any] = {
         "financial_analysis": analysis_result.get("financial"),
         "vc_analysis": analysis_result.get("vc"),
@@ -314,17 +334,13 @@ async def view_analysis(
             "competitor_search_error": competitors_result.get("error")
         })
 
-    # if isinstance(social_signals_result, Exception):
-    #     response["customer_voice_pmf_signal"] = "Customer-voice PMF signal is unavailable due to social-source collection error."
-    # else:
-    #     response["customer_voice_pmf_signal"] = social_signals_result
-
     if user_id:
         try:
             report_id = await save_report(db, user_id, prompt, response)
             response["report_id"] = report_id
-        except Exception as e:
-            print(f"Failed to save report: {e}")
+            logger.info("Report saved: %s", report_id)
+        except Exception:
+            logger.exception("Failed to save report to DB")
 
     return response
 
@@ -333,10 +349,17 @@ async def list_reports(
     user_id: str | None = Depends(get_current_user_id),
     db: aiosqlite.Connection = Depends(get_db)
 ):
+    logger.info("GET /reports | user_id=%s", user_id)
     if not user_id:
+        logger.warning("GET /reports rejected: no user_id (unauthenticated)")
         raise HTTPException(status_code=401, detail="Authentication required")
-    reports = await get_user_reports(db, user_id)
-    return {"reports": reports}
+    try:
+        reports = await get_user_reports(db, user_id)
+        logger.info("GET /reports OK: %d reports", len(reports))
+        return {"reports": reports}
+    except Exception:
+        logger.exception("GET /reports DB error")
+        raise
 
 @app.get("/reports/{report_id}")
 async def get_report(
