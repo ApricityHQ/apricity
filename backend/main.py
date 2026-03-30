@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 import traceback
@@ -19,11 +18,11 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnableLambda
 from langgraph.graph import StateGraph, END
 
 from pdf_ingest import extract_pdf_text
-from text_chunking import chunk_text
+from text_chunking import chunk_text, should_chunk
+from agents import financial_agent, vc_agent, cto_agent, marketing_agent, product_agent
 from db import init_db, get_db, save_report, get_user_reports, get_report_by_id, save_message, get_report_messages
 from auth import get_current_user_id
 
@@ -69,6 +68,22 @@ company_search_service = CompanySearchService.from_env(OPENAI_API_KEY)
 # Shared RAG Utilities
 # -------------------------------------------------------------------
 def build_retriever(content: str):
+    """
+    Chunk the given content and index it into an in-memory Chroma vector store.
+
+    Only called when the combined input text exceeds the RAG threshold (long inputs
+    such as uploaded PDFs). For short inputs, context is passed directly to agents.
+
+    Args:
+        content: The full combined text to chunk and index.
+
+    Returns:
+        A tuple of (retriever, chunk_count) where retriever is a LangChain
+        VectorStoreRetriever and chunk_count is the number of indexed chunks.
+
+    Raises:
+        ValueError: If content is empty or produces no chunks.
+    """
     chunks = chunk_text(content)
     if not chunks:
         raise ValueError("No content available to index")
@@ -77,62 +92,8 @@ def build_retriever(content: str):
     return vector_store.as_retriever(), len(chunks)
 
 
-format_docs = RunnableLambda(lambda docs: "\n\n".join(doc.page_content for doc in docs))
 
-
-# -------------------------------------------------------------------
-# Agent Prompt Templates
-# -------------------------------------------------------------------
-def agent_prompt(role: str, focus: str):
-    return ChatPromptTemplate.from_messages([
-        ("system", f"""
-You are a {role}.
-
-Rules:
-- Be concise and factual
-- DO NOT use conversational phrases
-- DO NOT say: "Certainly", "Here is", "Here's", "In conclusion"
-- DO NOT add introductions or summaries
-- Use short bullet points only
-- Max 5 bullets per section
-- No filler text
-
-Analyze ONLY the following aspects:
-{focus}
-
-Context:
-{{context}}
-"""),
-        ("human", "Provide your analysis.")
-    ])
-
-
-
-
-FINANCIAL_PROMPT = agent_prompt(
-    "Financial Analyst",
-    "- Revenue model\n- Cost structure\n- Financial viability\n- Forecasts\n- ROI potential"
-)
-
-VC_PROMPT = agent_prompt(
-    "Venture Capitalist",
-    "- Investment readiness\n- Scalability\n- Market traction\n- Risk factors\n- Exit potential"
-)
-
-CTO_PROMPT = agent_prompt(
-    "Chief Technology Officer",
-    "- Technical feasibility\n- Architecture\n- Innovation\n- Scalability\n- Technical risks"
-)
-
-MARKETING_PROMPT = agent_prompt(
-    "Marketing Specialist",
-    "- Target market\n- Go-to-market strategy\n- Brand positioning\n- Customer acquisition\n- Competitive landscape"
-)
-
-PRODUCT_PROMPT = agent_prompt(
-    "Product Analyst",
-    "- Product-market fit\n- User needs\n- Feature set\n- Differentiation\n- Adoption barriers"
-)
+# Agent prompts are defined in agents.py and imported above.
 
 AGGREGATOR_PROMPT = ChatPromptTemplate.from_messages([
     ("system", """You are a Senior Startup Evaluator synthesizing analyses from multiple experts.
@@ -159,7 +120,10 @@ Produce EXACTLY this output format:
 ## Success Probability: <Low|Medium|High>
 <1 sentence justification>
 """),
-    ("human", """Expert Analyses:
+    ("human", """STARTUP PITCH:
+{pitch}
+
+Expert Analyses:
 
 FINANCIAL ANALYSIS:
 {financial}
@@ -183,86 +147,32 @@ Provide your overall evaluation.""")
 ])
 
 
-# -------------------------------------------------------------------
-# Retrieval Queries (Keyword-focused)
-# -------------------------------------------------------------------
-RETRIEVAL_QUERIES = {
-    "financial": "revenue model cost structure financial viability forecasts ROI",
-    "vc": "investment readiness scalability market traction risk factors exit potential",
-    "cto": "technical feasibility architecture innovation scalability technical risks",
-    "marketing": "target market go-to-market strategy brand positioning customer acquisition competitive landscape",
-    "product": "product-market fit user needs feature set differentiation adoption barriers"
-}
-
-
-# -------------------------------------------------------------------
-# Agent Nodes
-# -------------------------------------------------------------------
-async def financial_agent(state):
-    retriever = state["retriever"]
-    query = RETRIEVAL_QUERIES["financial"]
-    chain = (
-        {"context": retriever | format_docs}
-        | FINANCIAL_PROMPT
-        | analysis_llm
-        | StrOutputParser()
-    )
-    return {"financial": await chain.ainvoke(query)}
-
-
-async def vc_agent(state):
-    retriever = state["retriever"]
-    query = RETRIEVAL_QUERIES["vc"]
-    chain = (
-        {"context": retriever | format_docs}
-        | VC_PROMPT
-        | analysis_llm
-        | StrOutputParser()
-    )
-    return {"vc": await chain.ainvoke(query)}
-
-
-async def cto_agent(state):
-    retriever = state["retriever"]
-    query = RETRIEVAL_QUERIES["cto"]
-    chain = (
-        {"context": retriever | format_docs}
-        | CTO_PROMPT
-        | analysis_llm
-        | StrOutputParser()
-    )
-    return {"cto": await chain.ainvoke(query)}
-
-
-async def marketing_agent(state):
-    retriever = state["retriever"]
-    query = RETRIEVAL_QUERIES["marketing"]
-    chain = (
-        {"context": retriever | format_docs}
-        | MARKETING_PROMPT
-        | analysis_llm
-        | StrOutputParser()
-    )
-    return {"marketing": await chain.ainvoke(query)}
-
-
-async def product_agent(state):
-    retriever = state["retriever"]
-    query = RETRIEVAL_QUERIES["product"]
-    chain = (
-        {"context": retriever | format_docs}
-        | PRODUCT_PROMPT
-        | analysis_llm
-        | StrOutputParser()
-    )
-    return {"product": await chain.ainvoke(query)}
+# Retrieval queries and agent node functions are defined in agents.py and imported above.
+# Agent nodes are wrapped below to close over the shared analysis_llm instance.
 
 
 # -------------------------------------------------------------------
 # LangGraph Definition (Parallel Agents)
 # -------------------------------------------------------------------
 class GraphState(dict):
+    """
+    Shared state passed through the LangGraph agent pipeline.
+
+    Fields:
+        pitch: Original startup description typed by the user.
+        context: Full combined text used when RAG is skipped (short inputs).
+        retriever: Chroma retriever instance when RAG is active (long inputs), else None.
+        competitors: Pre-formatted competitor summary string fed to all agents.
+        financial: Output from the financial analysis agent.
+        vc: Output from the VC analysis agent.
+        cto: Output from the CTO analysis agent.
+        marketing: Output from the marketing analysis agent.
+        product: Output from the product analysis agent.
+    """
+    pitch: str
+    context: str
     retriever: Any
+    competitors: str
     financial: str
     vc: str
     cto: str
@@ -270,15 +180,24 @@ class GraphState(dict):
     product: str
 
 
+# Wrap each agent to close over the shared LLM instance.
+# This keeps agents.py stateless and testable without the LLM as a global.
+async def _financial_node(state): return await financial_agent(state, analysis_llm)
+async def _vc_node(state): return await vc_agent(state, analysis_llm)
+async def _cto_node(state): return await cto_agent(state, analysis_llm)
+async def _marketing_node(state): return await marketing_agent(state, analysis_llm)
+async def _product_node(state): return await product_agent(state, analysis_llm)
+
+
 graph = StateGraph(GraphState)
 
-graph.add_node("financial_agent", financial_agent)
-graph.add_node("vc_agent", vc_agent)
-graph.add_node("cto_agent", cto_agent)
-graph.add_node("marketing_agent", marketing_agent)
-graph.add_node("product_agent", product_agent)
+graph.add_node("financial_agent", _financial_node)
+graph.add_node("vc_agent", _vc_node)
+graph.add_node("cto_agent", _cto_node)
+graph.add_node("marketing_agent", _marketing_node)
+graph.add_node("product_agent", _product_node)
 
-# Parallel execution
+# financial_agent is the entry point; all others fan out from it in parallel.
 graph.set_entry_point("financial_agent")
 
 graph.add_edge("financial_agent", "vc_agent")
@@ -324,50 +243,61 @@ async def view_analysis(
 
     combined_text = "\n\n".join([text for text in [prompt, *extracted_texts] if text])
 
+    # --- Step 1: Competitor search runs first so agents can reason about the market ---
+    competitors_result = None
     try:
-        retriever, chunk_count = build_retriever(combined_text)
-        logger.info("Retriever built: %d chunks", chunk_count)
+        competitors_result = await company_search_service.find_top_competitors_for_idea(prompt)
+        logger.info("Competitor search complete: status=%s", competitors_result.get("status"))
     except Exception as exc:
-        logger.exception("build_retriever failed")
-        raise HTTPException(status_code=500, detail=f"Failed to build retriever: {exc}")
-
-    analysis_task = app_graph.ainvoke({"retriever": retriever})
-    competitors_task = company_search_service.find_top_competitors_for_idea(prompt)
-
-    logger.info("Awaiting analysis_task and competitors_task in parallel...")
-    (
-        analysis_result,
-        competitors_result,
-    ) = await asyncio.gather(
-        analysis_task,
-        competitors_task,
-        return_exceptions=True
-    )
-
-    if isinstance(analysis_result, Exception):
-        logger.error(
-            "LangGraph analysis failed:\n%s",
-            "".join(traceback.format_exception(type(analysis_result), analysis_result, analysis_result.__traceback__))
-        )
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {analysis_result}")
-
-    if isinstance(competitors_result, Exception):
         logger.warning(
             "Competitor search failed (non-fatal):\n%s",
-            "".join(traceback.format_exception(type(competitors_result), competitors_result, competitors_result.__traceback__))
+            "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
         )
+
+    competitors_summary = "No competitor data available."
+    if competitors_result and not isinstance(competitors_result, Exception):
+        comps = competitors_result.get("competitors", [])
+        if comps:
+            competitors_summary = "\n".join(
+                f"- {c.get('company_name', 'Unknown')}: {c.get('description', '')}"
+                for c in comps
+            )
+
+    # --- Step 2: Build context — skip RAG for short inputs to avoid fragmentation ---
+    if should_chunk(combined_text):
+        try:
+            retriever, chunk_count = build_retriever(combined_text)
+            logger.info("Retriever built: %d chunks (RAG active)", chunk_count)
+        except Exception as exc:
+            logger.exception("build_retriever failed")
+            raise HTTPException(status_code=500, detail=f"Failed to build retriever: {exc}")
+        context = ""
+    else:
+        retriever = None
+        context = combined_text
+        logger.info("Short input (%d chars): passing full text directly, RAG skipped", len(combined_text))
+
+    # --- Step 3: Run all 5 agents in parallel via LangGraph ---
+    try:
+        analysis_result = await app_graph.ainvoke({
+            "pitch": prompt,
+            "context": context,
+            "retriever": retriever,
+            "competitors": competitors_summary,
+        })
+    except Exception as exc:
+        logger.error(
+            "LangGraph analysis failed:\n%s",
+            "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+        )
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {exc}")
 
     logger.info("Analysis complete. Agent result keys: %s", list(analysis_result.keys()))
 
-    competitors_summary = ""
-    if not isinstance(competitors_result, Exception):
-        competitors_summary = "\n".join(
-            f"- {c.get('name', 'Unknown')}: {c.get('description', '')}"
-            for c in competitors_result.get("competitors", [])
-        )
-
+    # --- Step 4: Aggregator synthesizes all agent outputs ---
     aggregator_chain = AGGREGATOR_PROMPT | analysis_llm | StrOutputParser()
     overall_evaluation = await aggregator_chain.ainvoke({
+        "pitch": prompt,
         "financial": analysis_result.get("financial", ""),
         "vc": analysis_result.get("vc", ""),
         "cto": analysis_result.get("cto", ""),
@@ -385,19 +315,19 @@ async def view_analysis(
         "product_analysis": analysis_result.get("product")
     }
 
-    if isinstance(competitors_result, Exception):
-        response.update({
-            "competitor_search_status": "error",
-            "idea_search_sentence": None,
-            "competitors": [],
-            "competitor_search_error": str(competitors_result)
-        })
-    else:
+    if competitors_result:
         response.update({
             "competitor_search_status": competitors_result.get("status"),
             "idea_search_sentence": competitors_result.get("search_sentence"),
             "competitors": competitors_result.get("competitors", []),
-            "competitor_search_error": competitors_result.get("error")
+            "competitor_search_error": competitors_result.get("error"),
+        })
+    else:
+        response.update({
+            "competitor_search_status": "error",
+            "idea_search_sentence": None,
+            "competitors": [],
+            "competitor_search_error": "Competitor search failed or was unavailable.",
         })
 
     if user_id:
