@@ -1,0 +1,79 @@
+\chapter{Testing}
+
+\section{Testing Methodology}
+
+Testing was carried out to verify that the system behaves correctly under different conditions. Two general approaches were used.
+
+White-box testing was applied to individual components where the internal logic was known. This includes functions like text chunking, PDF extraction, and authentication checks, which were tested directly by calling them with controlled inputs.
+
+Black-box testing was applied at the pipeline level, where the system was given a startup pitch and the outputs were checked without considering internal steps. This covers the multi-agent workflow and database operations.
+
+The following testing types were applied:
+
+\begin{enumerate}
+    \item \textbf{Unit Testing:} Individual backend functions were tested in isolation with no external API calls or LLM usage.
+
+    \item \textbf{Integration Testing:} Multiple components were tested together, including the full agent pipeline, RAG retrieval, and database operations.
+\end{enumerate}
+
+\section{Unit Testing}
+
+Unit tests cover backend utility functions that do not require any API keys or external services. All tests run against real inputs with no mocking.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{3.2cm}|p{3cm}|p{3.5cm}|p{3.5cm}|p{1.8cm}|}
+\hline
+\textbf{Test Title} & \textbf{Test Condition} & \textbf{System Behavior} & \textbf{Expected Result} & \textbf{Status} \\
+\hline
+RAG Threshold Logic & Inputs one char below, at, and above the 4000-char threshold & \texttt{should\_chunk()} evaluates text length & Returns False at or below threshold, True above & PASS \\
+\hline
+Custom Threshold & Call \texttt{should\_chunk()} with a custom threshold value & Threshold parameter overrides the default & Correct True/False based on custom value & PASS \\
+\hline
+Text Chunking Output & Pass a short sentence to \texttt{chunk\_text()} & Text is wrapped in a Document and returned & A list with one Document object & PASS \\
+\hline
+Empty Input Handling & Pass empty string and whitespace to \texttt{chunk\_text()} & Function detects no content & Empty list returned & PASS \\
+\hline
+Long Input Splitting & Pass a 5000-character string to \texttt{chunk\_text()} & Text is split using chunk size of 1000 & Multiple chunks, each at most 1000 chars & PASS \\
+\hline
+PDF Empty Input & Pass empty bytes to \texttt{extract\_pdf\_text()} & Function returns early & Empty string returned & PASS \\
+\hline
+PDF Valid Input & Pass a valid PDF to \texttt{extract\_pdf\_text()} & PDF reader processes the file & A string is returned without error & PASS \\
+\hline
+Auth Without JWKS & Call \texttt{verify\_clerk\_token()} with no JWKS configured & Missing configuration detected & HTTP 500 error with descriptive message & PASS \\
+\hline
+\end{tabular}
+\caption{Unit Testing Results}
+\end{table}
+
+\section{Integration Testing}
+
+Integration tests verify that multiple components work together correctly. The pipeline tests require a valid \texttt{OPENAI\_API\_KEY}. The database tests use a real temporary SQLite file with no mocks.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{3.2cm}|p{3cm}|p{3.5cm}|p{3.5cm}|p{1.8cm}|}
+\hline
+\textbf{Test Title} & \textbf{Test Condition} & \textbf{System Behavior} & \textbf{Expected Result} & \textbf{Status} \\
+\hline
+Full Pipeline Execution & Run all 5 agents and the aggregator on a sample pitch & Agents execute in parallel and aggregator combines outputs & Every agent and aggregator return non-empty output & PASS \\
+\hline
+Short Input Path & Pitch under 4000 characters & RAG is skipped, full text passed directly to agents & All 5 agents return valid analysis & PASS \\
+\hline
+Long Input Path & Input exceeding 4000 characters & Text is chunked, vector store is built, retriever is passed to agents & All 5 agents return valid analysis using retrieved context & PASS \\
+\hline
+Competitor Data Flow & Pass a competitor summary in pipeline state & Competitor data is included in every agent call & All outputs are non-empty and exceed 100 characters & PASS \\
+\hline
+Report Save and Retrieve & Save a report then retrieve it by ID & Data is written to SQLite and read back & Retrieved report matches the saved content exactly & PASS \\
+\hline
+User Data Isolation & Save reports under two different user IDs & Each user's query filters by their own ID & No report from one user is visible to the other & PASS \\
+\hline
+Report Access Control & Retrieve a report using a different user's ID & Ownership check applied during retrieval & None returned for unauthorised access & PASS \\
+\hline
+Message Persistence & Save two messages then retrieve for the report & Messages stored in order of creation & Messages returned in correct chronological order & PASS \\
+\hline
+Cascade Delete & Delete a report that has associated messages & Foreign key cascade applied on deletion & All messages for that report are also deleted & PASS \\
+\hline
+\end{tabular}
+\caption{Integration Testing Results}
+\end{table}
